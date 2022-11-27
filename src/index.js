@@ -60,7 +60,7 @@ const motivationalMessageDOM = () => {
         else {
             buttonsDiv.classList.add('invisible-elements');
         }
-        
+
         return buttonsDiv;
     }
 
@@ -79,11 +79,35 @@ const motivationalMessageDOM = () => {
     return {createMotivationalMessage};
 }
 
+const motivationalMessageDOMFunctionality = () => {
+    function addSettingBtnFunctionality(){
+        const settingBtn = document.getElementById('motivational-message-settings-btn');
+    }
+    
+    function createModalForm() {
+        
+    }
+
+    function addCloseBtnFunctionality() {
+        const closeBtn = document.getElementById('motivational-message-close-btn');
+        closeBtn.addEventListener('click', function() {
+            const motivationalMessageDiv = document.getElementById('motivational-message');
+            motivationalMessageDiv.remove();
+        })  
+    }
+
+    function addBtnFunctionality() {
+        addCloseBtnFunctionality();
+        addSettingBtnFunctionality();
+    }
+
+    return {addBtnFunctionality};
+}
 
 const addMotivationalMessage = () => {
     const motivationalMessagesArray = [];
     const DOM = motivationalMessageDOM();
-
+    const btnFunctionality = motivationalMessageDOMFunctionality();
     //object declaration for motivational messages
     function motivationalMessage(header, message, author = ''){
         return {header, message, author};
@@ -94,7 +118,7 @@ const addMotivationalMessage = () => {
         const motivationalMessage1 = motivationalMessage('Motivational Message','Yesterday you said tomorrow, so just do it. Don\'t let your dreams be dreams.','Shia LaBeouf');
         const motivationalMessage2 =  motivationalMessage('Motivational Message',"The most important investment you can make is in yourself.",'Warren Buffett');
         const motivationalMessage3 = motivationalMessage('Personal Message','You can play Pokemon if you finish coding this to-do list.','Bruce');
-        motivationalMessagesArray.push(motivationalMessage1, motivationalMessage2, motivationalMessage3);
+        motivationalMessagesArray.push(motivationalMessage3);
     }
 
     function chooseOneMotivationalMessage() {
@@ -109,14 +133,99 @@ const addMotivationalMessage = () => {
     function renderDefaultMessages() {
         addDefaultMotivationalMessages();
         DOM.createMotivationalMessage(chooseOneMotivationalMessage());
+        btnFunctionality.addBtnFunctionality();
     }
 
     return {renderDefaultMessages, deleteMessage};
 }
 
-
 //render inbox
-const renderInbox = (() => {
+const initialRender = (() => {
     const motivationalMessages = addMotivationalMessage();
     motivationalMessages.renderDefaultMessages();
 })();
+
+const createTaskDOM = () => {
+    const elemContainerDOM = () => {
+        const containerDiv = document.createElement('div');
+        containerDiv.setAttribute('id','content-margin');
+        return containerDiv;
+    }
+    
+    const mainHeaderDOM = () => {
+        function containerDiv(){
+            const headerDiv = document.createElement('div');
+            headerDiv.setAttribute('id','inbox-header');
+            
+            return headerDiv;
+        }
+    
+        function headingText() {
+            const heading = document.createElement('h1');
+            heading.classList.add('header-type');
+            heading.innerText = Inbox;
+            return heading;
+        }
+    
+        function headerIcons() {
+            const headerIconDiv = document.createElement('div');
+            headerIconDiv.classList.add('header-icon');
+    
+            const folderIcon = document.createElement('i');
+            folderIcon.classList.add('fa-sold','fa-folder-plus');
+    
+            const taskIcon = document.createElement('i');
+            taskIcon.classList.add('fa-solid','fa-square-plus');
+    
+            headerIconDiv.appendChild(folderIcon);
+            headerIconDiv.appendChild(taskIcon);
+    
+            return headerIconDiv;
+        }
+    
+        function getHeaderDOM() {
+            const container = containerDiv();
+            const header = headingText();
+            const headerIconsDiv = headerIcons();
+            container.appendChild(header);
+            container.appendChild(headerIconsDiv);
+            return container;
+        }
+    
+        return {getHeaderDOM};
+    }
+}
+
+
+/* 
+<div class = "section">
+    <div class = "section-header">
+        <h2 class = "section-title">Hello my name is Bruce</h2>
+        <div class = "section-dropdown"><i class="fa-solid fa-caret-down"></i></div>
+    </div>
+    <div class = "task">
+        <div class = "complete-task-btn">
+            <i class="fa-regular fa-circle"></i>
+        </div>
+        <div class = "task-title">Do something that works Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex reprehenderit optio excepturi saepe dolore voluptatibus recusandae iure quaerat dicta non!
+        <div class = "task-description">tst</div>
+        </div>
+        <div class = "button-icons">
+            <i class="fa-solid fa-square-plus"></i>
+            <i class="fa-solid fa-pen-to-square"></i>
+            <i class="fa-solid fa-trash"></i>
+        </div>
+    </div>
+    <div class = "subtask">
+        <div class = "complete-task-btn">
+            <i class="fa-regular fa-circle"></i>
+        </div>
+        <div class = "task-title">Do something that works Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex reprehenderit optio excepturi saepe dolore voluptatibus recusandae iure quaerat dicta non!</div>
+        <div class = "button-icons">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <i class="fa-solid fa-trash"></i>
+        </div>
+    </div>            
+</div>
+</div>
+ */

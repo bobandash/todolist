@@ -15,59 +15,19 @@
         <h1>Let's Do</h1>
         <i class="fa-regular fa-user"></i>
     </header>
-    <div class = "content-margin" id = "motivational-message">
-        <div id = "motivational-message-header">
-            <div class = "invisible-elements">
-                <button><i class="fa-solid fa-gear"></i></button>
-                <button><i class="fa-solid fa-x"></i></button>
-            </div>
-            <p>Motivational Message</p>
-            <div>
-                <button><i class="fa-solid fa-gear"></i></button>
-                <button><i class="fa-solid fa-x"></i></button>
-            </div>
-        </div>
-        <p>"You can play Pokemon if you finish coding this to-do list"</p>
-        <p>Bruce</p>
-    </div>
-    <div class = "content-margin" id = "inbox">
-        <div id = "inbox-header">
-            <h1 class = "header-type">Inbox</h1>
-            <div class = "header-icons">
-                <i class="fa-solid fa-folder-plus"></i>
-                <i class="fa-solid fa-square-plus"></i>
-            </div>
-        </div>
-
-        <div class = "section">
-            <div class = "section-header">
-                <h2 class = "section-title">Hello my name is Bruce</h2>
-                <div class = "section-dropdown"><i class="fa-solid fa-caret-down"></i></div>
-            </div>
-            <div class = "task">
-                <div class = "complete-task-btn">
-                    <i class="fa-regular fa-circle"></i>
-                </div>
-                <div class = "task-title">Do something that works Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex reprehenderit optio excepturi saepe dolore voluptatibus recusandae iure quaerat dicta non!
-                <div class = "task-description">tst</div>
-                </div>
-                <div class = "button-icons">
-                    <i class="fa-solid fa-square-plus"></i>
-                    <i class="fa-solid fa-pen-to-square"></i>
-                    <i class="fa-solid fa-trash"></i>
-                </div>
-            </div>
-            <div class = "subtask">
-                <div class = "complete-task-btn">
-                    <i class="fa-regular fa-circle"></i>
-                </div>
-                <div class = "task-title">Do something that works Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex reprehenderit optio excepturi saepe dolore voluptatibus recusandae iure quaerat dicta non!</div>
-                <div class = "button-icons">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                    <i class="fa-solid fa-trash"></i>
-                </div>
-            </div>            
-        </div>
+    <div class = "modal-container invisible-elements">
+        <i id = "modal-form-close-btn" class = "fa-solid fa-x"></i>
+        <form id = "motivational-message-setting">
+            <h3>Change Primary Message</h3>
+            <label for="heading">Heading:</label>
+            <input type="text" id="heading" name="heading">
+            <label for="message">Message:</label>
+            <input type="text" id="message" name="message">
+            <label for="author">Author:</label>
+            <input type="text" id="author" name="author">
+            <a href = "">Add More Messages</a>
+            <a href = "">Turn Off Motivational Messages</a>
+        </form>
     </div>
 </body>
 </html>
