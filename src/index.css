@@ -3,6 +3,10 @@
     box-sizing: border-box;
 }
 
+i {
+    margin-left: .2em;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -55,8 +59,7 @@ input {
 
 
 #content-margin {
-    margin-left: 1.5em;
-    margin-right: 1.5em;
+    margin: 1em 1.5em 0 1.5em;
 }
 
 .invisible-elements {

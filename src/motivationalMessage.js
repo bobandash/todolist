@@ -138,3 +138,5 @@ const addMotivationalMessage = () => {
 
     return {renderDefaultMessages, deleteMessage};
 }
+
+export {addMotivationalMessage};

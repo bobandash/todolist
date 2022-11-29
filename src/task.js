@@ -1,4 +1,51 @@
-//contains the task object and subtask object to create
+//js file contains the everything related to tasks
+//task object and subtask object to create
+import {renderTasks} from './taskDOM.js';
+
+//projects contain sections, sections contain tasks, tasks contain subtasks
+//some tasks don't have sections
+//project by default is inbox
+const storage = () => {
+    const allProjects = [];
+    const allSections = [];
+    const allTasks = [];
+    return {allSections, allProjects, allTasks};
+}
+
+const taskIndex = () => {
+    let taskIndex = 0;
+    function incrementIndex(){
+        taskIndex++;
+    }
+    function getIndex(){
+        return taskIndex;
+    }
+    return {incrementIndex, getIndex};
+}
+
+const project = (name, sections = []) => {
+    function getName(){
+        return name;
+    }
+
+    function changeName(newName){
+        name = newName;
+    }
+
+    function addSection(section){
+        sections.push(section);
+    }
+
+    function removeSection(section){
+    }
+
+    return {getName, changeName, addSection, removeSection}
+}
+
+const section = (name, index, tasks = []) => {
+    return {name, index, tasks};
+}
+
 const task = (
     name,
     description,
@@ -7,12 +54,25 @@ const task = (
     estimatedTime = '',
     priority = '',
     project = '',
+    section = '',
     subtasks = []) =>
 {
     let currSubtaskIndex = 0;
 
     function incrementSubtaskIndex(){
         currSubtaskIndex++;
+    }
+
+    function getName(){
+        return name;
+    }
+
+    function getDescription(){
+        return description;
+    }
+    
+    function getSection(){
+        return section;
     }
 
     function addSubtask(subtaskObj){
@@ -39,6 +99,7 @@ const task = (
         })
     }
 
+    //pretty sure there's a better way to do this
     function editTask(newTaskObj) {
         name = newTaskObj.name;
         description = newTaskObj.description;
@@ -48,7 +109,7 @@ const task = (
         project = newTaskObj.project;
     }
 
-    return {index, addSubtask, removeSubtask, editSubtask, editTask};
+    return {index, addSubtask, removeSubtask, editSubtask, editTask, getSection, getName, getDescription};
 }
 
 const subtask = (
@@ -75,5 +136,15 @@ const subtask = (
         priority = subtaskObj.priority;
     }
 
-    return {editSubtask, setIndex, getIndex};
+    function getName(){
+        return name;
+    }
+
+    return {editSubtask, setIndex, getIndex, getName};
 }
+
+
+export {storage, taskIndex, project, task, subtask};
+
+
+
