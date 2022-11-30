@@ -15,6 +15,7 @@ const renderTasks = () => {
         addNoSectionsTasksDOM(containerDiv, allTasksArray);
     }
 
+    //need to clean this up
     //add all tasks and tasks with sections
     function addSectionsTasksDOM(parentDiv, allSectionsArray){
         allSectionsArray.forEach(section => {
@@ -24,7 +25,7 @@ const renderTasks = () => {
                 sectionDOM.appendChild(taskDOM);
                 task.subtasks.forEach(subtask => {
                     const subtaskDOM = createSubtaskDOM(subtask).getSubtaskDOM();
-                    sectionDOM.appendChild(subtaskDOM);
+                    parentDiv.appendChild(subtaskDOM);
                 })
             })
             parentDiv.appendChild(sectionDOM);    
@@ -32,21 +33,17 @@ const renderTasks = () => {
     }
 
     function addNoSectionsTasksDOM(parentDiv, allTasksArray){
-        allTasksArray.forEach(task => console.log(task.getSection()));
-        console.log(allTasksArray[0].getSection());
         const noSectionTasksArray = allTasksArray.filter(task => !task.getSection());
-        console.log(noSectionTasksArray);
         noSectionTasksArray.forEach(task => {
             const taskDOM = createTaskDOM(task).getTaskDOM();
             parentDiv.appendChild(taskDOM);
+            const allSubtasks = task.subtasks;
+            allSubtasks.forEach(subtask => {
+                const subtaskDOM = createSubtaskDOM(subtask).getSubtaskDOM();
+                parentDiv.appendChild(subtaskDOM);
+            })
         })
     }
-
-
-
-/*     const section = (name, index, tasks = []) => {
-        return {name, index, tasks};
-    } */
     
 
     const clearAllTasks = () => {
@@ -56,7 +53,6 @@ const renderTasks = () => {
 
     return {renderDefault, clearAllTasks};
 }
-
 
 
 
@@ -197,14 +193,27 @@ const createTaskDOM = (taskObj) => {
         return buttonIconsDiv;
     }
 
+    function createEstimatedTimeDiv(taskObj){
+        const estimatedTimeDiv = document.createElement('div');
+        estimatedTimeDiv.classList.add('task-estimated-time');
+        estimatedTimeDiv.innerText = `Est Time: ${taskObj.getEstimatedTime()}`;
+        return estimatedTimeDiv;
+    }
+
     function getTaskDOM(){
         const containerDiv = createContainerDiv();
         const buttonsDiv = createTaskBtnDiv();
         const titleDiv = createTaskTitleDiv(taskObj);
-        const taskDescription = createTaskDescriptionDiv(taskObj);
         const taskButtons = createTaskButtonsDiv();
+        if(taskObj.getEstimatedTime()){
+            const taskEstimatedTime = createEstimatedTimeDiv(taskObj);
+            titleDiv.appendChild(taskEstimatedTime);
+        }
+        if(taskObj.getDescription()){
+            const taskDescription = createTaskDescriptionDiv(taskObj);
+            titleDiv.appendChild(taskDescription);
+        }
 
-        titleDiv.appendChild(taskDescription);
         containerDiv.appendChild(buttonsDiv);
         containerDiv.appendChild(titleDiv);
         containerDiv.appendChild(taskButtons);
@@ -252,7 +261,7 @@ const createSubtaskDOM = (subtaskObj) => {
 
         buttonsIconDiv.appendChild(editIcon);
         buttonsIconDiv.appendChild(deleteIcon);
-        return buttonsIconDiv();
+        return buttonsIconDiv;
     }
 
     function getSubtaskDOM(){
@@ -261,7 +270,6 @@ const createSubtaskDOM = (subtaskObj) => {
         const subtaskTitleDiv = createSubtaskTitleDiv(subtaskObj);
         const subtaskBtnIcons = createSubtaskButtonIcons();
 
-        containerDiv.appendChild(titleDiv);
         containerDiv.appendChild(completeSubtaskDiv);
         containerDiv.appendChild(subtaskTitleDiv);
         containerDiv.appendChild(subtaskBtnIcons);

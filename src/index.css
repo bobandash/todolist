@@ -131,7 +131,7 @@ input {
     margin: 0;
 }
 
-.task-description {
+.task-description, .task-estimated-time {
     color: rgb(119, 119, 119);
 }
 

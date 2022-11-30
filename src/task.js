@@ -75,6 +75,10 @@ const task = (
         return section;
     }
 
+    function getEstimatedTime(){
+        return estimatedTime;
+    }
+
     function addSubtask(subtaskObj){
         subtaskObj.setIndex(currSubtaskIndex);
         subtasks.push(subtaskObj);
@@ -109,7 +113,7 @@ const task = (
         project = newTaskObj.project;
     }
 
-    return {index, addSubtask, removeSubtask, editSubtask, editTask, getSection, getName, getDescription};
+    return {index, subtasks, addSubtask, removeSubtask, editSubtask, editTask, getSection, getName, getDescription, getEstimatedTime};
 }
 
 const subtask = (
@@ -144,7 +148,7 @@ const subtask = (
 }
 
 
-export {storage, taskIndex, project, task, subtask};
+export {storage, taskIndex, section, project, task, subtask};
 
 
 
