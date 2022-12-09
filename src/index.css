@@ -3,6 +3,10 @@
     box-sizing: border-box;
 }
 
+:root {
+    --modal-background: 1px solid rgba(128, 128, 128, 0.6);
+}
+
 i {
     margin-left: .2em;
 }
@@ -174,12 +178,37 @@ input {
     transform: translate(-50%, -50%);
     background-color: white;
     padding: 1em 2em;
-    border: 1px solid black;
+    border: var(--modal-background);
     border-radius: .5em;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.modal-container input {
+    border: var(--modal-background);
+    margin-top: .4em;
+    margin-bottom: .4em;
+}
+
+
+.modal-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.modal-buttons button{
+    display: block;
+    border: var(--modal-background);
+    padding: 0.3em 0.4em;
+    border-radius: .5em;
+}
+
+form {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 #modal-form-close-btn {
