@@ -1,18 +1,26 @@
-const project = (name, sections = []) => {
+export default project = (name, tasks = [], index) => {
     function getName(){
         return name;
     }
 
-    function changeName(newName){
+    function getIndex() {
+        return index;
+    }
+
+    function setIndex(index){
+        return index;
+    }
+
+    function setName(newName){
         name = newName;
     }
 
-    function addSection(section){
-        sections.push(section);
+    function addTask(task){
+        tasks.push(task);
     }
 
     function removeSection(section){
     }
 
-    return {getName, changeName, addSection, removeSection}
+    return {getName, getIndex, setIndex, setName, addSection, removeSection}
 }

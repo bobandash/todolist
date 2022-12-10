@@ -2,7 +2,7 @@
 //some tasks don't have sections
 //project by default is inbox
 
-const task = (
+export default task = (
     name,
     description,
     taskIndex,
@@ -13,12 +13,6 @@ const task = (
     sectionIndex,
     subtasks = []) =>
 {
-    let currSubtaskIndex = 0;
-
-    function incrementSubtaskIndex(){
-        currSubtaskIndex++;
-    }
-
     function getName(){
         return name;
     }
@@ -32,7 +26,7 @@ const task = (
     }
 
     function getEstimatedTime(){
-        return estimatedTime;
+        return estimatedCompletionTime;
     }
 
     function addSubtask(subtaskObj){
@@ -71,21 +65,6 @@ const task = (
 
     return {index, subtasks, addSubtask, removeSubtask, editSubtask, editTask, getSection, getName, getDescription, getEstimatedTime};
 }
-
-const taskIndex = () => {
-    let taskIndex = 0;
-    function incrementIndex(){
-        taskIndex++;
-    }
-    function getIndex(){
-        return taskIndex;
-    }
-    return {incrementIndex, getIndex};
-}
-
-
-
-export {storage, taskIndex, section, project, task, subtask};
 
 
 
