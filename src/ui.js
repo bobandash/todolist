@@ -1,6 +1,8 @@
 //contains all DOM Manipulation that's needed for tasks
 import storage from './storage.js';
+import task from './task.js';
 import DatePicker from "react-datepicker";
+
 
 const ui = (() => {
     function initialRender(){
@@ -121,8 +123,8 @@ const ui = (() => {
             const form = document.createElement('form');
             form.setAttribute('id','add-task-form');
 
-            const nameInput = createInput('text', 'name', 'Name', true);
-            const descriptionInput = createInput('text', 'description', 'Description', false);
+            const nameInput = createInput('text', 'name', 'Name', true, true);
+            const descriptionInput = createInput('text', 'description', 'Description', false, false);
 
             const popoverDiv = document.createElement('div');
             popoverDiv.classList.add('popover-icons-div');
@@ -164,6 +166,7 @@ const ui = (() => {
             submitBtn.innerText = 'Add Task';
 
             addCancelBtnFunctionality(cancelBtn);
+            addSubmitBtnFunctionality(submitBtn);
 
             containerDiv.appendChild(cancelBtn);
             containerDiv.appendChild(submitBtn);
@@ -182,12 +185,33 @@ const ui = (() => {
             }, {once:true});
         }
 
-        function createInput(type, id, placeholder, isRequired){
+        //removes the form and adds the task dom
+        //need to add error message of some sort when there's no text in the name field
+        function addSubmitBtnFunctionality(submitBtn){
+            submitBtn.addEventListener('click', function(){
+                const nameField = document.getElementById('name').value;
+                const descriptionField = document.getElementById('description').value;
+                if(nameField){
+                    //create task
+                    let newTask = task(nameField, descriptionField);
+                    let newTaskDOM = taskDOM(newTask).getDOM();
+                    const container = document.getElementById('container');
+                    const addTaskElem = addTaskDivDOM().getDOM();
+                    const formContainer = document.getElementById('add-task-form-container');
+                    formContainer.remove();
+                    container.appendChild(newTaskDOM);
+                    container.appendChild(addTaskElem);
+                } 
+            })          
+        }
+
+        function createInput(type, id, placeholder, isRequired, isAutoFocus){
             const input = document.createElement('input');
             input.setAttribute('type', type);
             input.setAttribute('id', id);
             input.setAttribute('placeholder', placeholder);
             if(isRequired ? input.required = true : input.required = false);
+            if(isAutoFocus ? input.autofocus = true : input.autofocus = false);
             return input;
         }
 
