@@ -90,6 +90,7 @@ const ui = (() => {
                 const container = document.getElementById('container');
                 const addTaskForm = addTaskFormDOM().getDOM();
                 container.appendChild(addTaskForm);
+                containerDiv.remove();
             }, {once: true})
             return containerDiv;
         }
@@ -97,6 +98,8 @@ const ui = (() => {
         return {getDOM};
     }
 
+    //create the form that adds tasks
+    //unique id is add-task-form-container
     const addTaskFormDOM = () => {
         function getDOM(){
             const container = getContainer();
@@ -160,10 +163,23 @@ const ui = (() => {
             submitBtn.setAttribute('id','add-task-submit-button');
             submitBtn.innerText = 'Add Task';
 
+            addCancelBtnFunctionality(cancelBtn);
+
             containerDiv.appendChild(cancelBtn);
             containerDiv.appendChild(submitBtn);
 
             return containerDiv;
+        }
+
+        //removes the form and adds the add task text back
+        function addCancelBtnFunctionality(cancelBtn){
+            cancelBtn.addEventListener('click', function(){
+                const container = document.getElementById('container');
+                const addTaskElem = addTaskDivDOM().getDOM();
+                const formContainer = document.getElementById('add-task-form-container');
+                formContainer.remove();
+                container.appendChild(addTaskElem);
+            }, {once:true});
         }
 
         function createInput(type, id, placeholder, isRequired){
