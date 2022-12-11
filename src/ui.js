@@ -58,6 +58,8 @@ const ui = (() => {
         return {getDOM};
     }
 
+    //div that when you click, the add task form appears
+    //unique id is add-task-clickable-div
     const addTaskDivDOM = () => {
         function container() {
             const containerDiv = document.createElement('div');
@@ -84,16 +86,97 @@ const ui = (() => {
             const addTaskTextElem = addTaskText();
             containerDiv.appendChild(plusIconElem);
             containerDiv.appendChild(addTaskTextElem);
+            containerDiv.addEventListener('click', function(){
+                const container = document.getElementById('container');
+                const addTaskForm = addTaskFormDOM().getDOM();
+                container.appendChild(addTaskForm);
+            }, {once: true})
             return containerDiv;
         }
 
         return {getDOM};
     }
 
-/*     <div id = "add-task-clickable-div">
-    <i class ="button-icon-in-div fa fa-plus"></i>
-    <div class = "add-task-text">Add Task</div>
-    </div> */
+    const addTaskFormDOM = () => {
+        function getDOM(){
+            const container = getContainer();
+            const form = getForm();
+            const formActions = getFormActions();
+
+            container.appendChild(form);
+            container.appendChild(formActions);
+            return container;
+        }
+        
+        function getContainer(){
+            const container = document.createElement('div');
+            container.setAttribute('id','add-task-form-container');
+            return container;
+        }
+
+        function getForm(){
+            const form = document.createElement('form');
+            form.setAttribute('id','add-task-form');
+
+            const nameInput = createInput('text', 'name', 'Name', true);
+            const descriptionInput = createInput('text', 'description', 'Description', false);
+
+            const popoverDiv = document.createElement('div');
+            popoverDiv.classList.add('popover-icons-div');
+            const priorityDiv = getPopoverIcons('priority-btn', 'fa-flag', 'Priority');
+            const dueDateDiv = getPopoverIcons('due-date-btn', 'fa-calendar','Due Date');
+            const estimatedTimeDiv = getPopoverIcons('est-completion-time-btn', 'fa-clock', 'Est Time');
+            popoverDiv.appendChild(priorityDiv);
+            popoverDiv.appendChild(dueDateDiv);
+            popoverDiv.appendChild(estimatedTimeDiv);
+
+            
+            function getPopoverIcons(divId, iconClass, text){
+                const containerDiv = document.createElement('div');
+                containerDiv.setAttribute('id',divId);
+                const icon = document.createElement('i');
+                const iconText = document.createTextNode(' ' + text);
+                icon.classList.add('fa-regular',iconClass);
+                containerDiv.appendChild(icon);
+                containerDiv.appendChild(iconText);
+                return containerDiv;
+            }
+
+            form.appendChild(nameInput);
+            form.appendChild(descriptionInput);
+            form.appendChild(popoverDiv);
+            return form;
+        }
+
+        function getFormActions(){
+            const containerDiv = document.createElement('div');
+            containerDiv.setAttribute('id','form-actions-div');
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.setAttribute('id','cancel-add-task-form');
+            cancelBtn.innerText = 'Cancel';
+
+            const submitBtn = document.createElement('button');
+            submitBtn.setAttribute('id','add-task-submit-button');
+            submitBtn.innerText = 'Add Task';
+
+            containerDiv.appendChild(cancelBtn);
+            containerDiv.appendChild(submitBtn);
+
+            return containerDiv;
+        }
+
+        function createInput(type, id, placeholder, isRequired){
+            const input = document.createElement('input');
+            input.setAttribute('type', type);
+            input.setAttribute('id', id);
+            input.setAttribute('placeholder', placeholder);
+            if(isRequired ? input.required = true : input.required = false);
+            return input;
+        }
+
+        return {getDOM};
+    }
 
     //creates DOM of one task
     const taskDOM = (taskObj) => {
