@@ -5,6 +5,13 @@
 
 :root {
     --modal-background: 1px solid rgba(128, 128, 128, 0.6);
+    --theme-color: #5881D0;
+}
+
+input::placeholder {
+    font-weight: 400;
+    font-size: 1.25em;
+    font-family: 'Inter', 'Sans-Serif', 'Times New Roman';  
 }
 
 i {
@@ -30,7 +37,7 @@ button {
 }
 
 header {
-    background-color: #5881D0;
+    background-color: var(--theme-color);
     height: 10vh;
     display: flex;
     justify-content: space-between;
@@ -55,13 +62,20 @@ input {
     width: 100%;
 }
 
+input[type="submit"]{
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 10px;
+    font-size: 1.25em;
+}
+
 #motivational-message-setting label, #motivational-message-setting a {
     display: block;
     margin-top: 0.5em;
 }
 
 
-#content-margin {
+#container {
     margin: 1em 1.5em 0 1.5em;
 }
 
@@ -113,6 +127,81 @@ input {
     margin-top: .15em;
 }
 
+/* for the add task div */
+
+#add-task-clickable-div {
+    display: flex;
+    border-radius: 1em;
+    font-size: 1.25em;
+    align-items: center;
+    padding-top: .25em;
+    padding-bottom: .25em;
+}
+
+.add-task-text {
+    margin-left: 0.5em;
+}
+
+/*end for the add task div */
+
+/* for the add task form when you click the clickable div */
+#add-task-form {
+    border: 1px solid black;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+#add-task-form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+}
+
+#add-task-form > input, #add-task-form > div {
+    margin-top: .25em;
+    margin-bottom: .25em;
+    width: 85%;
+}
+
+.popover-icons-div{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.popover-icons-div div, #form-actions-div button {
+    border: 1px solid gray;;
+    border-radius: 5px;;
+    padding: .2em;
+}
+
+#form-actions-div {
+    width: 100%;
+    display: flex;
+}
+
+#form-actions-div button {
+    font-size: 1em;
+}
+
+#add-task-submit-button {
+    margin-left: 1em;
+    background-color: var(--theme-color);
+}
+
+#cancel-add-task-form {
+    margin-left: auto;
+}
+
+
+/* end for the add task form when you click the clickable div */
 
 .task {
     margin-top: .5em;

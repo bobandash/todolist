@@ -1,11 +1,21 @@
 //render inbox
-import storage from './storage.js';
+import UI from './ui.js';
 import project from './project.js';
+import storage from './storage.js';
 
 (() => {
-    allProjects.push()
+    renderDefaultProjects();
+    UI.initialRender();
 
-    const render = renderTasks();
-    render.renderDefault([],[]);
+    function renderDefaultProjects(){
+        let inbox = project('Inbox');
+        let today = project('Today');
+        let thisweek = project('This Week');
+        storage.addProject(inbox);
+        storage.addProject(today);
+        storage.addProject(thisweek);
+    }
+
+
 })();
 

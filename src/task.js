@@ -1,18 +1,17 @@
-//projects contain sections, sections contain tasks, tasks contain subtasks
-//some tasks don't have sections
-//project by default is inbox
+import indexCounter from './helper.js';
 
-export default task = (
+const task = (
     name,
     description,
-    taskIndex,
     dueDate,
     estimatedCompletionTime,
     priority,
-    projectIndex,
-    sectionIndex,
-    subtasks = []) =>
+    subtasks = [],
+    index) =>
 {
+
+    let currSubtaskIndex = indexCounter();
+    
     function getName(){
         return name;
     }
@@ -20,15 +19,32 @@ export default task = (
     function getDescription(){
         return description;
     }
-    
-    function getSection(){
-        return section;
+
+    function getDueDate(){
+        return dueDate;
     }
 
     function getEstimatedTime(){
         return estimatedCompletionTime;
     }
 
+    function getIndex(){
+        return index;
+    }
+
+    function getPriority(){
+        return priority;
+    }
+
+    function setIndex(taskIndex){
+        index = taskIndex;
+    }
+
+    function getSubtasks(){
+        return subtasks;
+    }
+
+    //need to set a unique index for subtask after it's created
     function addSubtask(subtaskObj){
         subtaskObj.setIndex(currSubtaskIndex);
         subtasks.push(subtaskObj);
@@ -44,27 +60,10 @@ export default task = (
         })
     }
 
-    function removeSubtask(index){
-        subtasks.forEach((subtask, i) => {
-            if(subtask.index === index){
-                subtasks.splice(i, 1);
-                return;
-            }
-        })
-    }
-
-    //pretty sure there's a better way to do this
-    function editTask(newTaskObj) {
-        name = newTaskObj.name;
-        description = newTaskObj.description;
-        dueDate = newTaskObj.dueDate;
-        estimatedTime = newTaskObj.estimatedTime;
-        priority = newTaskObj.priority;
-        project = newTaskObj.project;
-    }
-
-    return {index, subtasks, addSubtask, removeSubtask, editSubtask, editTask, getSection, getName, getDescription, getEstimatedTime};
+    return {getName, getDescription, getDueDate, getEstimatedTime, getIndex, getPriority, getSubtasks,
+            setIndex};
 }
 
 
 
+export default task;
