@@ -181,10 +181,22 @@ input[type="submit"]{
     justify-content: space-between;
 }
 
-.popover-icons-div div, #form-actions-div button {
+.task-form-icons, #form-actions-div button {
     border: 1px solid gray;;
     border-radius: 5px;;
     padding: .2em;
+}
+
+.popover-container {
+    border-radius: 5px;
+    padding: 0;
+    border: 1px solid black;
+    background-color: white;
+}
+
+.popover-container div {
+    border-bottom: 1px solid black;
+    padding: .1em .2em;
 }
 
 #form-actions-div {
@@ -214,6 +226,10 @@ input[type="submit"]{
     grid-template-columns: 30px 1fr 60px;
     grid-template-areas:
         "bullet-points task-headers button-icons";
+}
+
+.invisible {
+    display: none;
 }
 
 .subtask {

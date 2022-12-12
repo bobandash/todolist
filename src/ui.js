@@ -3,6 +3,7 @@ import storage from './storage.js';
 import task from './task.js';
 import subtask from './subtask.js';
 import project from './project.js';
+import { createPopper } from '@popperjs/core';
 
 import DatePicker from "react-datepicker";
 
@@ -138,27 +139,67 @@ const ui = (() => {
             const priorityDiv = getPopoverIcons('priority-btn', 'fa-flag', 'Priority');
             const dueDateDiv = getPopoverIcons('due-date-btn', 'fa-calendar','Due Date');
             const estimatedTimeDiv = getPopoverIcons('est-completion-time-btn', 'fa-clock', 'Est Time');
+            
+
+            const priorityOptions = getPriorityOptionsDiv();
+            //c
+
+/*             <div id="tooltip" role="tooltip">
+                My tooltip
+                <div id="arrow" data-popper-arrow></div>
+            </div> */
+
             popoverDiv.appendChild(priorityDiv);
+            popoverDiv.appendChild(priorityOptions);
             popoverDiv.appendChild(dueDateDiv);
             popoverDiv.appendChild(estimatedTimeDiv);
 
-            
-            function getPopoverIcons(divId, iconClass, text){
-                const containerDiv = document.createElement('div');
-                containerDiv.setAttribute('id',divId);
-                const icon = document.createElement('i');
-                const iconText = document.createTextNode(' ' + text);
-                icon.classList.add('fa-regular',iconClass);
-                containerDiv.appendChild(icon);
-                containerDiv.appendChild(iconText);
-                return containerDiv;
-            }
+            createPopper(priorityDiv, priorityOptions, {placement: 'bottom'});
 
             form.appendChild(nameInput);
             form.appendChild(descriptionInput);
             form.appendChild(popoverDiv);
             return form;
         }
+
+        //for priority, due date, and estimated time popovers
+        function getPopoverIcons(divId, iconClass, text){
+            const containerDiv = document.createElement('div');
+            containerDiv.setAttribute('id',divId);
+            containerDiv.classList.add('task-form-icons');
+            const icon = document.createElement('i');
+            const iconText = document.createTextNode(' ' + text);
+            icon.classList.add('fa-regular',iconClass);
+            containerDiv.appendChild(icon);
+            containerDiv.appendChild(iconText);
+            return containerDiv;
+        }
+        
+        function getPriorityOptionsDiv(){
+            const container = document.createElement('div');
+            container.classList.add('popover-container');
+            const priority1 = getPriorityOption(1);
+            const priority2 = getPriorityOption(2);
+            const priority3 = getPriorityOption(3);
+            container.appendChild(priority1);
+            container.appendChild(priority2);
+            container.appendChild(priority3);
+
+            return container;
+        }
+
+        function getPriorityOption(priorityNumber){
+            const priorityOptionDiv = document.createElement('div');
+            const priorityIcon = document.createElement('i');
+            priorityIcon.classList.add('fa-regular','fa-flag');
+            const iconText = document.createTextNode(' Priority ' + priorityNumber);
+            priorityOptionDiv.appendChild(priorityIcon);
+            priorityOptionDiv.appendChild(iconText);
+            priorityOptionDiv.setAttribute('id','priority-' + priorityNumber);
+            return priorityOptionDiv;
+        }
+
+        //end for priority, due date, and estimated time popovers
 
         function getFormActions(){
             const containerDiv = document.createElement('div');
@@ -199,7 +240,7 @@ const ui = (() => {
                 const nameField = document.getElementById('name').value;
                 const descriptionField = document.getElementById('description').value;
                 if(nameField){
-                    let projectIndexInArray = getProjectIndexInArray();
+                    let projectIndexInArray = storageLookups.getProjectIndex();
                     let newTask = task(nameField, descriptionField);
                     //this updates the task with the current index
                     newTask = storage.allProjects[projectIndexInArray].addTask(newTask);
@@ -213,19 +254,6 @@ const ui = (() => {
                     container.appendChild(addTaskElem);
                 } 
             })          
-        }
-
-        //returns index of project in all projects array
-        function getProjectIndexInArray(){
-            let projectIndexInArray = 0;
-            let projectDataIndex = document.getElementById('project-header').getAttribute('data-index');
-            storage.allProjects.forEach((project, index) => {
-                if(project.getIndex() == projectDataIndex){
-                    projectIndexInArray = index;
-                    return;
-                }
-            })
-            return projectIndexInArray;
         }
 
         function createInput(type, id, placeholder, isRequired, isAutoFocus){
@@ -307,8 +335,8 @@ const ui = (() => {
                 const descriptionField = document.getElementById('description').value;
                 if(nameField){
                     const subtaskFormContainer = document.getElementById('add-subtask-form-container');
-                    let projectIndexInArray = getProjectIndexInArray();
-                    let taskIndexInArray = getTaskIndexInArray(projectIndexInArray);
+                    let projectIndexInArray = storageLookups.getProjectIndex();
+                    //let taskIndexInArray = storageLookups.getTaskIndex(orih)
                     let newSubtask = subtask(nameField, descriptionField);
                     // newSubtask = storage.allProjects[projectIndexInArray].allTasks[taskIndexInArray].addSubtask(newSubtask);
                     let newSubtaskDOM = subtaskDOM(newSubtask).getDOM();
@@ -335,17 +363,6 @@ const ui = (() => {
                 }
             })
             return projectIndexInArray;
-        }
-
-        //returns task element that the subtasks are under
-        function getTaskElemReferenced(projectIndexInArray){
-
-        }
-
-        //returns index of task index from project
-        function getTaskIndexInArray(projectIndexInArray){
-            let tasksInProject = storage.allProjects[projectIndexInArray].getTasks();
-            
         }
 
         function createInput(type, id, placeholder, isRequired, isAutoFocus){
@@ -440,19 +457,13 @@ const ui = (() => {
             deleteIcon.classList.add('fa-solid','fa-trash');
 
             addSubtaskIconFunctionality(plusIcon, taskDiv);
-            addDeleteIconFunctionality(deleteIcon);
+            editIconFunctionality(editIcon, taskDiv);
+            deleteIconFunctionality(deleteIcon);
 
             buttonIconsDiv.appendChild(plusIcon);
             buttonIconsDiv.appendChild(editIcon);
             buttonIconsDiv.appendChild(deleteIcon);
             return buttonIconsDiv;
-        }
-    
-        //task side button functionalities
-        function addDeleteIconFunctionality(deleteIcon){
-            deleteIcon.addEventListener('click', function(){
-                removeTask(deleteIcon);
-            })
         }
 
         function addSubtaskIconFunctionality(plusIcon, taskDiv){
@@ -461,6 +472,22 @@ const ui = (() => {
                 taskDiv.parentNode.insertBefore(subtaskForm, taskDiv.nextSibling);
             })
         }
+
+        function editIconFunctionality(editIcon, taskDiv){
+            editIcon.addEventListener('click', function(){
+                const taskForm = addTaskFormDOM().getDOM();
+                taskDiv.parentNode.insertBefore(taskForm, taskDiv.nextSibling);
+                taskDiv.classList.add('invisible');
+            })
+        }
+
+        //task side button functionalities
+        function deleteIconFunctionality(deleteIcon){
+            deleteIcon.addEventListener('click', function(){
+                removeTask(deleteIcon);
+            })
+        }
+
 
         function createEstimatedTimeDiv(taskObj){
             const estimatedTimeDiv = document.createElement('div');
@@ -558,6 +585,34 @@ const ui = (() => {
     
         return {getDOM};
     }
+
+    //find the array indicies of projects, tasks, and subtasks
+    const storageLookups = (() => {
+        //returns index of project in all projects array
+        function getProjectIndex(){
+            let projectIndexInArray = 0;
+            let projectDataIndex = document.getElementById('project-header').getAttribute('data-index');
+            storage.allProjects.forEach((project, index) => {
+                if(project.getIndex() == projectDataIndex){
+                    projectIndexInArray = index;
+                }
+            })
+            return projectIndexInArray;
+        }
+
+        //returns index of task in all tasks array
+        function getTaskIndex(projectIndex, taskDataIndex){
+            let currentProjectTasks = storage.allProjects[projectIndex].getTasks();
+            return currentProjectTasks.findIndex(task => {task.getIndex() == taskDataIndex});
+        }
+
+        function getSubtaskIndex(projectIndex, taskIndex, subtaskDataIndex){
+            let currentProjectSubtasks = storage.allProjects[projectIndex].getTasks()[taskIndex].getSubtasks();
+            return currentProjectSubtasks.findIndex(subtask => {subtask.getIndex() == subtaskDataIndex});
+        }
+
+        return {getProjectIndex, getTaskIndex, getSubtaskIndex}
+    })();
 
     //adds all dom of tasks and subtasks in a project
     function addAllTasksDOM(container, tasks){
