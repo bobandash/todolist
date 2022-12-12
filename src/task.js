@@ -61,7 +61,7 @@ const task = (
     }
 
     return {getName, getDescription, getDueDate, getEstimatedTime, getIndex, getPriority, getSubtasks,
-            setIndex};
+            setIndex, addSubtask};
 }
 
 

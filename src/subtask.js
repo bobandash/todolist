@@ -1,17 +1,22 @@
 const subtask = (
     name,
-    description) =>
+    description,
+    index) =>
 {
 
     function getIndex(){
         return index;
     }
 
+    function getDescription(){
+        return description;
+    }
+
     function getName(){
         return name;
     }
 
-    return {getIndex, getName};
+    return {getIndex, getName, getDescription};
 }
 
 export default subtask;

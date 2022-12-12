@@ -1,6 +1,7 @@
 //contains all DOM Manipulation that's needed for tasks
 import storage from './storage.js';
 import task from './task.js';
+import subtask from './subtask.js';
 import project from './project.js';
 
 import DatePicker from "react-datepicker";
@@ -16,16 +17,16 @@ const ui = (() => {
         const inboxProject = storage.allProjects.filter(project => project.getName() === 'Inbox')[0];
         const header = projectHeaderDOM(inboxProject).getDOM();
         const addTaskDiv = addTaskDivDOM().getDOM();
+        
         containerDiv.appendChild(header);
-        containerDiv.appendChild(addTaskDiv);
-        bodyElem.appendChild(containerDiv);
         storage.allProjects.forEach(project => {
             if(project.getName() === 'Inbox'){
                 const tasks = project.getTasks()
                 addAllTasksDOM(containerDiv, tasks);
             }
         })
-        
+        containerDiv.appendChild(addTaskDiv);
+        bodyElem.appendChild(containerDiv);       
     }
 
     //create the container to put all tasks, the add task button, and project header in
@@ -293,10 +294,8 @@ const ui = (() => {
         function addCancelBtnFunctionality(cancelBtn){
             cancelBtn.addEventListener('click', function(){
                 const container = document.getElementById('container');
-                const addTaskElem = addTaskDivDOM().getDOM();
-                const formContainer = document.getElementById('add-task-form-container');
+                const formContainer = document.getElementById('add-subtask-form-container');
                 formContainer.remove();
-                container.appendChild(addTaskElem);
             }, {once:true});
         }
 
@@ -307,18 +306,20 @@ const ui = (() => {
                 const nameField = document.getElementById('name').value;
                 const descriptionField = document.getElementById('description').value;
                 if(nameField){
+                    const subtaskFormContainer = document.getElementById('add-subtask-form-container');
                     let projectIndexInArray = getProjectIndexInArray();
-                    let newTask = task(nameField, descriptionField);
+                    let taskIndexInArray = getTaskIndexInArray(projectIndexInArray);
+                    let newSubtask = subtask(nameField, descriptionField);
+                    // newSubtask = storage.allProjects[projectIndexInArray].allTasks[taskIndexInArray].addSubtask(newSubtask);
+                    let newSubtaskDOM = subtaskDOM(newSubtask).getDOM();
+
+                    subtaskFormContainer.parentNode.insertBefore(newSubtaskDOM, subtaskFormContainer)
+                    subtaskFormContainer.remove();
+
+
                     //this updates the task with the current index
-                    newTask = storage.allProjects[projectIndexInArray].addTask(newTask);
-                    let newTaskDOM = taskDOM(newTask).getDOM();
+
                     
-                    const container = document.getElementById('container');
-                    const addTaskElem = addTaskDivDOM().getDOM();
-                    const formContainer = document.getElementById('add-task-form-container');
-                    formContainer.remove();
-                    container.appendChild(newTaskDOM);
-                    container.appendChild(addTaskElem);
                 } 
             })          
         }
@@ -334,6 +335,17 @@ const ui = (() => {
                 }
             })
             return projectIndexInArray;
+        }
+
+        //returns task element that the subtasks are under
+        function getTaskElemReferenced(projectIndexInArray){
+
+        }
+
+        //returns index of task index from project
+        function getTaskIndexInArray(projectIndexInArray){
+            let tasksInProject = storage.allProjects[projectIndexInArray].getTasks();
+            
         }
 
         function createInput(type, id, placeholder, isRequired, isAutoFocus){
@@ -414,7 +426,7 @@ const ui = (() => {
             return taskDescriptionDiv;
         }
     
-        function createTaskButtonsDiv(){
+        function createTaskButtonsDiv(taskDiv){
             const buttonIconsDiv = document.createElement('div');
             buttonIconsDiv.classList.add('button-icons');
     
@@ -427,7 +439,7 @@ const ui = (() => {
             const deleteIcon = document.createElement('i');
             deleteIcon.classList.add('fa-solid','fa-trash');
 
-            addSubtaskIconFunctionality(plusIcon);
+            addSubtaskIconFunctionality(plusIcon, taskDiv);
             addDeleteIconFunctionality(deleteIcon);
 
             buttonIconsDiv.appendChild(plusIcon);
@@ -443,13 +455,10 @@ const ui = (() => {
             })
         }
 
-        function addSubtaskIconFunctionality(plusIcon){
+        function addSubtaskIconFunctionality(plusIcon, taskDiv){
             plusIcon.addEventListener('click', function(){
-                const container = document.getElementById('container');
-                const addTaskDiv = document.getElementById('add-task-clickable-div');
                 const subtaskForm = addSubtaskFormDOM().getDOM();
-                addTaskDiv.remove();
-                container.appendChild(subtaskForm);
+                taskDiv.parentNode.insertBefore(subtaskForm, taskDiv.nextSibling);
             })
         }
 
@@ -464,7 +473,7 @@ const ui = (() => {
             const containerDiv = createContainerDiv(taskObj);
             const buttonsDiv = createTaskBtnDiv();
             const titleDiv = createTaskTitleDiv(taskObj);
-            const taskButtons = createTaskButtonsDiv();
+            const taskButtons = createTaskButtonsDiv(containerDiv);
             if(taskObj.getEstimatedTime()){
                 const taskEstimatedTime = createEstimatedTimeDiv(taskObj);
                 titleDiv.appendChild(taskEstimatedTime);
@@ -509,6 +518,13 @@ const ui = (() => {
             titleDiv.innerText = subtaskObj.getName();
             return titleDiv;
         }
+
+        function createSubtaskDescriptionDiv(subtaskObj){
+            const descriptionDiv = document.createElement('div');
+            descriptionDiv.classList.add('task-description');
+            descriptionDiv.innerText = subtaskObj.getDescription();
+            return descriptionDiv;
+        }
     
         function createSubtaskButtonIcons() {
             const buttonsIconDiv = document.createElement('div');
@@ -529,10 +545,12 @@ const ui = (() => {
             const containerDiv = createSubtaskDiv();
             const completeSubtaskDiv = createCompleteSubtaskDiv();
             const subtaskTitleDiv = createSubtaskTitleDiv(subtaskObj);
+            const subtaskDescriptionDiv = createSubtaskDescriptionDiv(subtaskObj);
             const subtaskBtnIcons = createSubtaskButtonIcons();
     
             containerDiv.appendChild(completeSubtaskDiv);
             containerDiv.appendChild(subtaskTitleDiv);
+            subtaskTitleDiv.appendChild(subtaskDescriptionDiv);
             containerDiv.appendChild(subtaskBtnIcons);
     
             return containerDiv;
