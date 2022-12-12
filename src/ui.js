@@ -261,31 +261,35 @@ const ui = (() => {
             return completeTaskDiv;
         }
     
-        function addCompleteTaskIconFunctionality(completeTaskIcon){
-            completeTaskIcon.addEventListener('click', function(){
-                let currentProjectIndex = document.getElementById('project-header').getAttribute('data-index');
-                let currentTaskIndex = '';
-                let projectIndexInArray = '';
-                let taskIndexInArray = '';
-                
-                //iterate curr element until it gets to task class
-                let currElem = completeTaskIcon;
-                while(!currElem.parentNode.classList.contains('task')){
-                    currElem = currElem.parentNode;
-                }
+        //remove task given an element inside the task div
+        function removeTask(childElement){
+            let currentProjectIndex = document.getElementById('project-header').getAttribute('data-index');
+            let currentTaskIndex = '';
+            let projectIndexInArray = '';
+            let taskIndexInArray = '';
+            
+            //iterate curr element until it gets to task class
+            let currElem = childElement;
+            while(!currElem.parentNode.classList.contains('task')){
                 currElem = currElem.parentNode;
+            }
+            currElem = currElem.parentNode;
 
-                currentTaskIndex = currElem.getAttribute('data-index');
+            currentTaskIndex = currElem.getAttribute('data-index');
 
-                projectIndexInArray = storage.allProjects.findIndex(project => project.getIndex() == currentProjectIndex);
-                taskIndexInArray = storage.allProjects[projectIndexInArray].getTasks().findIndex(task => task.getIndex() == currentTaskIndex);
-                
-                console.log(taskIndexInArray);
+            projectIndexInArray = storage.allProjects.findIndex(project => project.getIndex() == currentProjectIndex);
+            taskIndexInArray = storage.allProjects[projectIndexInArray].getTasks().findIndex(task => task.getIndex() == currentTaskIndex);
 
-                storage.allProjects[projectIndexInArray].removeTask(taskIndexInArray);
-                currElem.remove();
+            storage.allProjects[projectIndexInArray].removeTask(taskIndexInArray);
+            currElem.remove();
+        }
+
+        function addCompleteTaskIconFunctionality(completeTaskIcon){
+            completeTaskIcon.addEventListener('click', function() {
+                removeTask(completeTaskIcon);
             })
         }
+
         function createTaskTitleDiv(taskObj){
             const taskTitleDiv = document.createElement('div');
             taskTitleDiv.classList.add('task-title');
@@ -312,13 +316,22 @@ const ui = (() => {
     
             const deleteIcon = document.createElement('i');
             deleteIcon.classList.add('fa-solid','fa-trash');
-    
+
+            addDeleteIconFunctionality(deleteIcon);
+
             buttonIconsDiv.appendChild(plusIcon);
             buttonIconsDiv.appendChild(editIcon);
             buttonIconsDiv.appendChild(deleteIcon);
             return buttonIconsDiv;
         }
     
+        //task side button functionalities
+        function addDeleteIconFunctionality(deleteIcon){
+            deleteIcon.addEventListener('click', function(){
+                removeTask(deleteIcon);
+            })
+        }
+
         function createEstimatedTimeDiv(taskObj){
             const estimatedTimeDiv = document.createElement('div');
             estimatedTimeDiv.classList.add('task-estimated-time');
@@ -426,7 +439,7 @@ const ui = (() => {
     return {initialRender, clearAllTasks};
 
 })()
-
+/* 
 const renderTasks = () => {
     const addMotivationalMessage = () => {
         const motivationalMessagesArray = [];
@@ -467,7 +480,7 @@ const renderTasks = () => {
 }
 
 
-
+ */
 export default ui;
 
 
