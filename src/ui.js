@@ -1,15 +1,20 @@
 //contains all DOM Manipulation that's needed for tasks
 import storage from './storage.js';
 import task from './task.js';
+import project from './project.js';
+
 import DatePicker from "react-datepicker";
 
+//each dom element has a data index that's also in the storage
+//these 'data-index' attributes are used to reference the storage arrays
 
 const ui = (() => {
     function initialRender(){
         const bodyElem = document.querySelector('body');
 /*         addMotivationalMessage().renderDefaultMessages(); */
         const containerDiv = containerDOM().getDOM();
-        const header = projectHeaderDOM('Inbox').getDOM();
+        const inboxProject = storage.allProjects.filter(project => project.getName() === 'Inbox')[0];
+        const header = projectHeaderDOM(inboxProject).getDOM();
         const addTaskDiv = addTaskDivDOM().getDOM();
         containerDiv.appendChild(header);
         containerDiv.appendChild(addTaskDiv);
@@ -35,18 +40,19 @@ const ui = (() => {
     }
     
     //the project header
-    //unique id is inbox-header
-    const projectHeaderDOM = (headerName) => {
+    //unique id is project-header
+    const projectHeaderDOM = (project) => {
         function containerDiv(){
             const headerDiv = document.createElement('div');
-            headerDiv.setAttribute('id','inbox-header');
+            headerDiv.setAttribute('id','project-header');
+            headerDiv.setAttribute('data-index',project.getIndex());
             return headerDiv;
         }
     
         function headingText() {
             const heading = document.createElement('h1');
             heading.classList.add('header-type');
-            heading.innerText = headerName;
+            heading.innerText = project.getName();
             return heading;
         }
     
@@ -192,9 +198,12 @@ const ui = (() => {
                 const nameField = document.getElementById('name').value;
                 const descriptionField = document.getElementById('description').value;
                 if(nameField){
-                    //create task
+                    let projectIndexInArray = getProjectIndexInArray();
                     let newTask = task(nameField, descriptionField);
+                    //this updates the task with the current index
+                    newTask = storage.allProjects[projectIndexInArray].addTask(newTask);
                     let newTaskDOM = taskDOM(newTask).getDOM();
+                    
                     const container = document.getElementById('container');
                     const addTaskElem = addTaskDivDOM().getDOM();
                     const formContainer = document.getElementById('add-task-form-container');
@@ -203,6 +212,19 @@ const ui = (() => {
                     container.appendChild(addTaskElem);
                 } 
             })          
+        }
+
+        //returns index of project in all projects array
+        function getProjectIndexInArray(){
+            let projectIndexInArray = 0;
+            let projectDataIndex = document.getElementById('project-header').getAttribute('data-index');
+            storage.allProjects.forEach((project, index) => {
+                if(project.getIndex() == projectDataIndex){
+                    projectIndexInArray = index;
+                    return;
+                }
+            })
+            return projectIndexInArray;
         }
 
         function createInput(type, id, placeholder, isRequired, isAutoFocus){
@@ -220,9 +242,10 @@ const ui = (() => {
 
     //creates DOM of one task
     const taskDOM = (taskObj) => {
-        function createContainerDiv(){
+        function createContainerDiv(taskObj){
             const taskDiv = document.createElement('div');
             taskDiv.classList.add('task');
+            taskDiv.setAttribute('data-index', taskObj.getIndex());
             return taskDiv;
         }
     
@@ -232,10 +255,37 @@ const ui = (() => {
     
             const completeTaskIcon = document.createElement('i');
             completeTaskIcon.classList.add('fa-regular','fa-circle');
+            addCompleteTaskIconFunctionality(completeTaskIcon);
+
             completeTaskDiv.appendChild(completeTaskIcon);
             return completeTaskDiv;
         }
     
+        function addCompleteTaskIconFunctionality(completeTaskIcon){
+            completeTaskIcon.addEventListener('click', function(){
+                let currentProjectIndex = document.getElementById('project-header').getAttribute('data-index');
+                let currentTaskIndex = '';
+                let projectIndexInArray = '';
+                let taskIndexInArray = '';
+                
+                //iterate curr element until it gets to task class
+                let currElem = completeTaskIcon;
+                while(!currElem.parentNode.classList.contains('task')){
+                    currElem = currElem.parentNode;
+                }
+                currElem = currElem.parentNode;
+
+                currentTaskIndex = currElem.getAttribute('data-index');
+
+                projectIndexInArray = storage.allProjects.findIndex(project => project.getIndex() == currentProjectIndex);
+                taskIndexInArray = storage.allProjects[projectIndexInArray].getTasks().findIndex(task => task.getIndex() == currentTaskIndex);
+                
+                console.log(taskIndexInArray);
+
+                storage.allProjects[projectIndexInArray].removeTask(taskIndexInArray);
+                currElem.remove();
+            })
+        }
         function createTaskTitleDiv(taskObj){
             const taskTitleDiv = document.createElement('div');
             taskTitleDiv.classList.add('task-title');
@@ -277,7 +327,7 @@ const ui = (() => {
         }
     
         function getDOM(){
-            const containerDiv = createContainerDiv();
+            const containerDiv = createContainerDiv(taskObj);
             const buttonsDiv = createTaskBtnDiv();
             const titleDiv = createTaskTitleDiv(taskObj);
             const taskButtons = createTaskButtonsDiv();
@@ -412,11 +462,6 @@ const renderTasks = () => {
     
         return {renderDefaultMessages, deleteMessage};
     }
-
-
-    
-
-
 
     return {renderDefault, clearAllTasks};
 }

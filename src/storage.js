@@ -1,4 +1,3 @@
-import project from './project.js';
 import indexCounter from './helper.js';
 //projects contain tasks, tasks contain subtasks
 //for now, we'll follow that hierachy
@@ -9,9 +8,9 @@ const storage = (() => {
     let currProjectIndex = indexCounter();
 
     function addProject(project){
-        allProjects.push(project);
-        project.setIndex(currProjectIndex.currIndex);
+        project.setIndex(currProjectIndex.getIndex());
         currProjectIndex.incrementIndex();
+        allProjects.push(project);
     }
 
     function removeProject(projectIndex){

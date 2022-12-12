@@ -19,8 +19,8 @@ const project = (name, tasks = [], index) => {
         name = newName;
     }
 
-    function setIndex(index){
-        return index;
+    function setIndex(newIndex){
+        index = newIndex;
     }
 
     //need to set a unique index for task after it's created
@@ -28,6 +28,7 @@ const project = (name, tasks = [], index) => {
         task.setIndex(currTaskIndex.getIndex());
         tasks.push(task);
         currTaskIndex.incrementIndex();
+        return task;
     }
 
     function removeTask(taskIndex){
