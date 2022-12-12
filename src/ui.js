@@ -240,6 +240,116 @@ const ui = (() => {
         return {getDOM};
     }
 
+    const addSubtaskFormDOM = () => {
+        function getDOM(){
+            const container = getContainer();
+            const form = getForm();
+            const formActions = getFormActions();
+
+            container.appendChild(form);
+            container.appendChild(formActions);
+            return container;
+        }
+        
+        function getContainer(){
+            const container = document.createElement('div');
+            container.setAttribute('id','add-subtask-form-container');
+            return container;
+        }
+
+        function getForm(){
+            const form = document.createElement('form');
+            form.setAttribute('id','add-subtask-form');
+
+            const nameInput = createInput('text', 'name', 'Name', true, true);
+            const descriptionInput = createInput('text', 'description', 'Description', false, false);
+            form.appendChild(nameInput);
+            form.appendChild(descriptionInput);
+            return form;
+        }
+
+        function getFormActions(){
+            const containerDiv = document.createElement('div');
+            containerDiv.setAttribute('id','form-actions-div');
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.setAttribute('id','cancel-add-subtask-form');
+            cancelBtn.innerText = 'Cancel';
+
+            const submitBtn = document.createElement('button');
+            submitBtn.setAttribute('id','add-subtask-submit-button');
+            submitBtn.innerText = 'Add Subtask';
+
+            addCancelBtnFunctionality(cancelBtn);
+            addSubmitBtnFunctionality(submitBtn);
+
+            containerDiv.appendChild(cancelBtn);
+            containerDiv.appendChild(submitBtn);
+
+            return containerDiv;
+        }
+
+        //removes the form and adds the add task text back
+        function addCancelBtnFunctionality(cancelBtn){
+            cancelBtn.addEventListener('click', function(){
+                const container = document.getElementById('container');
+                const addTaskElem = addTaskDivDOM().getDOM();
+                const formContainer = document.getElementById('add-task-form-container');
+                formContainer.remove();
+                container.appendChild(addTaskElem);
+            }, {once:true});
+        }
+
+        //removes the form and adds the task dom
+        //need to add error message of some sort when there's no text in the name field
+        function addSubmitBtnFunctionality(submitBtn){
+            submitBtn.addEventListener('click', function(){
+                const nameField = document.getElementById('name').value;
+                const descriptionField = document.getElementById('description').value;
+                if(nameField){
+                    let projectIndexInArray = getProjectIndexInArray();
+                    let newTask = task(nameField, descriptionField);
+                    //this updates the task with the current index
+                    newTask = storage.allProjects[projectIndexInArray].addTask(newTask);
+                    let newTaskDOM = taskDOM(newTask).getDOM();
+                    
+                    const container = document.getElementById('container');
+                    const addTaskElem = addTaskDivDOM().getDOM();
+                    const formContainer = document.getElementById('add-task-form-container');
+                    formContainer.remove();
+                    container.appendChild(newTaskDOM);
+                    container.appendChild(addTaskElem);
+                } 
+            })          
+        }
+
+        //returns index of project in all projects array
+        function getProjectIndexInArray(){
+            let projectIndexInArray = 0;
+            let projectDataIndex = document.getElementById('project-header').getAttribute('data-index');
+            storage.allProjects.forEach((project, index) => {
+                if(project.getIndex() == projectDataIndex){
+                    projectIndexInArray = index;
+                    return;
+                }
+            })
+            return projectIndexInArray;
+        }
+
+        function createInput(type, id, placeholder, isRequired, isAutoFocus){
+            const input = document.createElement('input');
+            input.setAttribute('type', type);
+            input.setAttribute('id', id);
+            input.setAttribute('placeholder', placeholder);
+            if(isRequired ? input.required = true : input.required = false);
+            if(isAutoFocus ? input.autofocus = true : input.autofocus = false);
+            return input;
+        }
+
+        return {getDOM};        
+    }
+
+
     //creates DOM of one task
     const taskDOM = (taskObj) => {
         function createContainerDiv(taskObj){
@@ -317,6 +427,7 @@ const ui = (() => {
             const deleteIcon = document.createElement('i');
             deleteIcon.classList.add('fa-solid','fa-trash');
 
+            addSubtaskIconFunctionality(plusIcon);
             addDeleteIconFunctionality(deleteIcon);
 
             buttonIconsDiv.appendChild(plusIcon);
@@ -329,6 +440,16 @@ const ui = (() => {
         function addDeleteIconFunctionality(deleteIcon){
             deleteIcon.addEventListener('click', function(){
                 removeTask(deleteIcon);
+            })
+        }
+
+        function addSubtaskIconFunctionality(plusIcon){
+            plusIcon.addEventListener('click', function(){
+                const container = document.getElementById('container');
+                const addTaskDiv = document.getElementById('add-task-clickable-div');
+                const subtaskForm = addSubtaskFormDOM().getDOM();
+                addTaskDiv.remove();
+                container.appendChild(subtaskForm);
             })
         }
 

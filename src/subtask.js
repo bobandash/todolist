@@ -1,9 +1,6 @@
 const subtask = (
     name,
-    description,
-    dueDate,
-    estimatedTime,
-    priority) =>
+    description) =>
 {
 
     function getIndex(){
