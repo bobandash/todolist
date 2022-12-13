@@ -69,6 +69,22 @@ input[type="submit"]{
     font-size: 1.25em;
 }
 
+.icon {
+    text-shadow: -1px 0 #000, 0 1px #000, 1px 0 #000, 0 -1px #000;
+}
+
+.icon-red {
+    color: red;
+}
+
+.icon-yellow {
+    color: yellow;
+}
+
+.icon-green {
+    color: green;
+}
+
 #motivational-message-setting label, #motivational-message-setting a {
     display: block;
     margin-top: 0.5em;

@@ -140,21 +140,11 @@ const ui = (() => {
             const dueDateDiv = getPopoverIcons('due-date-btn', 'fa-calendar','Due Date');
             const estimatedTimeDiv = getPopoverIcons('est-completion-time-btn', 'fa-clock', 'Est Time');
             
-
-            const priorityOptions = getPriorityOptionsDiv();
-            //c
-
-/*             <div id="tooltip" role="tooltip">
-                My tooltip
-                <div id="arrow" data-popper-arrow></div>
-            </div> */
-
             popoverDiv.appendChild(priorityDiv);
-            popoverDiv.appendChild(priorityOptions);
             popoverDiv.appendChild(dueDateDiv);
             popoverDiv.appendChild(estimatedTimeDiv);
 
-            createPopper(priorityDiv, priorityOptions, {placement: 'bottom'});
+            addPriorityPopoverEventListener(priorityDiv, popoverDiv);
 
             form.appendChild(nameInput);
             form.appendChild(descriptionInput);
@@ -174,10 +164,36 @@ const ui = (() => {
             containerDiv.appendChild(iconText);
             return containerDiv;
         }
-        
+
+
+        //if there's any active popovers, remove the popover
+        //determined by class name 'active-popover'
+        function removeActivePopovers(){
+            const activePopovers = Array.from(document.getElementsByClassName('active-popover'));
+            if(activePopovers.length > 0){
+                activePopovers.forEach(popOver => {
+                popOver.remove();
+            })}
+        }
+
+        //when clicking priority options div
+        function addPriorityPopoverEventListener(priorityDiv, parentDiv){
+            priorityDiv.addEventListener('click', function(){
+                removeActivePopovers();
+                const priorityOptionsDiv = document.getElementById('priority-options');
+                if(!priorityOptionsDiv){
+                    const priorityOptions = getPriorityOptionsDiv();
+                    createPopper(priorityDiv, priorityOptions, {placement: 'bottom'});
+                    parentDiv.appendChild(priorityOptions);
+                }
+            })
+        }
+
         function getPriorityOptionsDiv(){
             const container = document.createElement('div');
-            container.classList.add('popover-container');
+            container.classList.add('popover-container', 'active-popover');
+            container.setAttribute('id','priority-options');
+
             const priority1 = getPriorityOption(1);
             const priority2 = getPriorityOption(2);
             const priority3 = getPriorityOption(3);
@@ -191,12 +207,33 @@ const ui = (() => {
         function getPriorityOption(priorityNumber){
             const priorityOptionDiv = document.createElement('div');
             const priorityIcon = document.createElement('i');
-            priorityIcon.classList.add('fa-regular','fa-flag');
-            const iconText = document.createTextNode(' Priority ' + priorityNumber);
+            priorityIcon.classList.add('fa-solid','fa-flag','icon');
+            switch(priorityNumber){
+                case 1:
+                    priorityIcon.classList.add('icon-red');
+                    break;
+                case 2:
+                    priorityIcon.classList.add('icon-yellow');
+                    break;
+                case 3:
+                    priorityIcon.classList.add('icon-green');
+                    break;
+            }
+            const iconText = document.createTextNode(' Priority');
             priorityOptionDiv.appendChild(priorityIcon);
             priorityOptionDiv.appendChild(iconText);
-            priorityOptionDiv.setAttribute('id','priority-' + priorityNumber);
+            priorityOptionDiv.addEventListener('click', function() {
+                changePriorityButton(priorityIcon, priorityNumber);
+                removeActivePopovers();
+            })
             return priorityOptionDiv;
+        }
+
+        function changePriorityButton(newPriorityIcon, priorityNumber){
+            const priorityBtn = document.getElementById('priority-btn');
+            const oldPriorityIcon = priorityBtn.querySelector('i');
+            oldPriorityIcon.parentNode.replaceChild(newPriorityIcon, oldPriorityIcon);
+            priorityBtn.setAttribute('data-priority', priorityNumber);
         }
 
         //end for priority, due date, and estimated time popovers
