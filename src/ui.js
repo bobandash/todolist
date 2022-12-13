@@ -2,10 +2,8 @@
 import storage from './storage.js';
 import task from './task.js';
 import subtask from './subtask.js';
-import project from './project.js';
 import { createPopper } from '@popperjs/core';
-
-import DatePicker from "react-datepicker";
+import { Datepicker } from 'vanillajs-datepicker';
 
 //each dom element has a data index that's also in the storage
 //these 'data-index' attributes are used to reference the storage arrays
@@ -145,6 +143,7 @@ const ui = (() => {
             popoverDiv.appendChild(estimatedTimeDiv);
 
             addPriorityPopoverEventListener(priorityDiv, popoverDiv);
+            //addDueDatePopoverEventListener(dueDateDiv, popoverDiv);
 
             form.appendChild(nameInput);
             form.appendChild(descriptionInput);
@@ -180,12 +179,9 @@ const ui = (() => {
         function addPriorityPopoverEventListener(priorityDiv, parentDiv){
             priorityDiv.addEventListener('click', function(){
                 removeActivePopovers();
-                const priorityOptionsDiv = document.getElementById('priority-options');
-                if(!priorityOptionsDiv){
-                    const priorityOptions = getPriorityOptionsDiv();
-                    createPopper(priorityDiv, priorityOptions, {placement: 'bottom'});
-                    parentDiv.appendChild(priorityOptions);
-                }
+                const priorityOptions = getPriorityOptionsDiv();
+                createPopper(priorityDiv, priorityOptions, {placement: 'bottom'});
+                parentDiv.appendChild(priorityOptions);
             })
         }
 
@@ -223,17 +219,42 @@ const ui = (() => {
             priorityOptionDiv.appendChild(priorityIcon);
             priorityOptionDiv.appendChild(iconText);
             priorityOptionDiv.addEventListener('click', function() {
-                changePriorityButton(priorityIcon, priorityNumber);
+                changePriorityIcon(priorityIcon);
+                addPriorityDataAttribute(priorityNumber);
                 removeActivePopovers();
             })
             return priorityOptionDiv;
         }
 
-        function changePriorityButton(newPriorityIcon, priorityNumber){
+        function changePriorityIcon(newPriorityIcon){
             const priorityBtn = document.getElementById('priority-btn');
             const oldPriorityIcon = priorityBtn.querySelector('i');
             oldPriorityIcon.parentNode.replaceChild(newPriorityIcon, oldPriorityIcon);
+
+        }
+
+        function addPriorityDataAttribute(priorityNumber){
+            const priorityBtn = document.getElementById('priority-btn');
             priorityBtn.setAttribute('data-priority', priorityNumber);
+        }
+
+        //start due date popover
+         //when clicking due date popover
+         function addDueDatePopoverEventListener(dueDateDiv, parentDiv){
+            dueDateDiv.addEventListener('click', function(){
+                removeActivePopovers();
+                const calendar = getCalendarDiv();
+                createPopper(dueDateDiv, calendar, {placement: 'bottom'});
+                parentDiv.appendChild(calendar);
+            })
+        }       
+
+        function getCalendarDiv(){
+            const container = document.createElement('div');
+            const calendar = new Datepicker(container);
+            container.appendChild(calendar);
+            container.classList.add('popover-container','active-popover');
+            return container;  
         }
 
         //end for priority, due date, and estimated time popovers
@@ -380,7 +401,6 @@ const ui = (() => {
 
                     subtaskFormContainer.parentNode.insertBefore(newSubtaskDOM, subtaskFormContainer)
                     subtaskFormContainer.remove();
-
 
                     //this updates the task with the current index
 
@@ -670,6 +690,10 @@ const ui = (() => {
     return {initialRender, clearAllTasks};
 
 })()
+
+
+export default ui;
+
 /* 
 const renderTasks = () => {
     const addMotivationalMessage = () => {
@@ -712,8 +736,6 @@ const renderTasks = () => {
 
 
  */
-export default ui;
-
 
 /* const motivationalMessageDOM = () => {
     function createMotivationalMessage(motivationalMessageObj){
