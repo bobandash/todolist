@@ -293,7 +293,7 @@ const ui = (() => {
         function addCancelEditTaskBtnFunctionality(){
             cancelBtn.addEventListener('click', function(){
                 const invisibleTask = document.getElementById('invisible');
-                invisibleTask.classList.remove('invisible');
+                invisibleTask.removeAttribute('id');
                 form.remove();
             })
         }
@@ -376,7 +376,7 @@ const ui = (() => {
         function addCancelEditTaskBtnFunctionality(){
             cancelBtn.addEventListener('click', function(){
                 const invisibleTask = document.getElementById('invisible');
-                invisibleTask.classList.remove('invisible');
+                invisibleTask.removeAttribute('id');
                 form.remove();
             })
         }
