@@ -36,6 +36,26 @@ const task = (
         return priority;
     }
 
+    function setName(newName){
+        name = newName;
+    }
+
+    function setDescription(newDescription){
+        description = newDescription;
+    }
+
+    function setPriority(newPriority){
+        priority = newPriority;
+    }
+
+    function setDueDate(newDueDate){
+        dueDate = newDueDate;
+    }
+
+    function setEstimatedTime(newEstTime){
+        estimatedCompletionTime = newEstTime;
+    }
+
     function setIndex(taskIndex){
         index = taskIndex;
     }
@@ -61,7 +81,7 @@ const task = (
     }
 
     return {getName, getDescription, getDueDate, getEstimatedTime, getIndex, getPriority, getSubtasks,
-            setIndex, addSubtask};
+            setName, setPriority, setDescription, setDueDate, setEstimatedTime, setIndex, addSubtask};
 }
 
 

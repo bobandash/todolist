@@ -1,3 +1,5 @@
+/* @import '~js-datepicker/dist/datepicker.min.css';
+ */
 * {
     font-family: 'Inter', 'Sans-Serif', 'Times New Roman';
     box-sizing: border-box;
@@ -78,7 +80,7 @@ input[type="submit"]{
 }
 
 .icon-yellow {
-    color: yellow;
+    color: 	yellow;
 }
 
 .icon-green {
@@ -160,7 +162,7 @@ input[type="submit"]{
     margin-left: 30px;
 }
 
-#add-task-form, #add-subtask-form {
+#task-form, #add-subtask-form {
     border: 1px solid black;
     border-radius: 10px;
     display: flex;
@@ -168,6 +170,7 @@ input[type="submit"]{
     align-items: center;
     padding-top: 0.5em;
     padding-bottom: 0.5em;
+    margin-top: 0.75em;
 }
 
 #add-subtask-form input {
@@ -175,22 +178,13 @@ input[type="submit"]{
     margin: 5px; 
 }
 
-
-#add-task-form-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0 auto;
-}
-
-#add-task-form > input, #add-task-form > div {
+#task-form > input, .popover-icons-div {
     margin-top: .25em;
     margin-bottom: .25em;
     width: 85%;
 }
 
 .popover-icons-div{
-    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -216,7 +210,9 @@ input[type="submit"]{
 }
 
 #form-actions-div {
-    width: 100%;
+    margin: .5em;
+    margin-bottom: 0em;
+    width: 92.5%;
     display: flex;
 }
 
@@ -224,12 +220,12 @@ input[type="submit"]{
     font-size: 1em;
 }
 
-#add-task-submit-button, #add-subtask-submit-button {
+#submit-task-form, #add-subtask-submit-button {
     margin-left: 0.5em;
     background-color: var(--theme-color);
 }
 
-#cancel-add-task-form, #cancel-add-subtask-form {
+#cancel-task-form, #cancel-add-subtask-form {
     margin-left: auto;
 }
 
