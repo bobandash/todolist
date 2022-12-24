@@ -292,7 +292,7 @@ const ui = (() => {
 
         function addCancelEditTaskBtnFunctionality(){
             cancelBtn.addEventListener('click', function(){
-                const invisibleTask = document.querySelector('.invisible');
+                const invisibleTask = document.getElementById('invisible');
                 invisibleTask.classList.remove('invisible');
                 form.remove();
             })
@@ -303,15 +303,13 @@ const ui = (() => {
                 const nameField = document.getElementById('name').value;
                 const descriptionField = document.getElementById('description').value;
                 const priorityNumber = document.getElementById('priority-btn').getAttribute('data-priority-number');
-                const invisibleTaskElement = document.querySelector('.invisible');
+                const invisibleTaskElement = document.getElementById('invisible');
 
                 if(nameField){
-                    //on here
                     const currentTaskDataIndex = invisibleTaskElement.getAttribute('data-task-index');
                     const projectIndexInArray = storageLookups.getProjectIndex();
-                    //doesn't work
                     const taskIndexInArray = storageLookups.getTaskIndex(projectIndexInArray, currentTaskDataIndex);
-                    const currentTask = storage.allProjects[projectIndexInArray].getTasks()[taskIndexInArray]
+                    const currentTask = storage.allProjects[projectIndexInArray].getTasks()[taskIndexInArray];
                     currentTask.setName(nameField)
                     currentTask.setDescription(descriptionField)
                     currentTask.setPriority(priorityNumber);
@@ -323,6 +321,93 @@ const ui = (() => {
                 }               
             })
         }
+    }
+
+
+    function createDOMSubtaskForm(type){
+        const nameInput = createInput('text', skip(1), 'name', 'Name', true, true);
+        const descriptionInput = createInput('text', skip(1), 'description', 'Description', false, false);
+        //buttons for form actions
+        const cancelBtn = createTag('button','Cancel', skip(1), 'cancel-task-form');
+        const submitBtn = createTag('button','Confirm', skip(1), 'submit-task-form');
+        const formActionBtnsContainer = createContainer('div', skip(1), 'form-actions-div', [cancelBtn, submitBtn]);
+
+        const form = createContainer('div', skip(1), 'task-form', [nameInput, descriptionInput, formActionBtnsContainer], skip(1));
+
+        if(type === 'add'){
+            addCancelAddTaskBtnFunctionality();
+            addSubmitAddTaskBtnFunctionality();
+        }
+        else if(type === 'edit'){
+            addCancelEditTaskBtnFunctionality();
+            addSubmitEditTaskFunctionality();
+        }        
+
+        return form;
+
+        function addCancelAddTaskBtnFunctionality(){
+            cancelBtn.addEventListener('click', function(){
+                form.remove();
+            })
+        }
+
+        function addSubmitAddTaskBtnFunctionality(){
+            submitBtn.addEventListener('click', function(){
+                const nameField = document.getElementById('name').value;
+                const descriptionField = document.getElementById('description').value;
+                if(nameField){
+                    let newSubtask = subtask(nameField, descriptionField);
+
+                    const projectArrayIndex = storageLookups.getProjectIndex();
+                    const dataTaskIndex = form.getAttribute('data-task-index');
+                    const taskArrayIndex = storageLookups.getTaskIndex(projectArrayIndex, dataTaskIndex);
+                    const currentTaskInStorage = storage.allProjects[projectArrayIndex].getTasks()[taskArrayIndex];
+                    
+                    //this doesn't work
+                    currentTaskInStorage.addSubtask(newSubtask);
+
+                    const subtaskDOM = createDOMSubtask(newSubtask, dataTaskIndex);
+                    form.parentNode.insertBefore(subtaskDOM, form);
+                    form.remove();
+                }
+            })
+        }
+
+        function addCancelEditTaskBtnFunctionality(){
+            cancelBtn.addEventListener('click', function(){
+                const invisibleTask = document.getElementById('invisible');
+                invisibleTask.classList.remove('invisible');
+                form.remove();
+            })
+        }
+
+        function addSubmitEditTaskFunctionality(){
+            submitBtn.addEventListener('click', function(){
+                const invisibleTaskElement = document.getElementById('invisible');
+                const taskDataIndex = subtask.getAttribute('data-task-index');
+                const subtaskDataIndex = subtask.getAttribute('data-subtask-index');
+    
+                const projectArrayIndex = storageLookups.getProjectIndex();
+                const taskArrayIndex = storageLookups.getTaskIndex(projectArrayIndex, taskDataIndex);
+                const subtaskArrayIndex = storageLookups.getSubtaskIndex(projectArrayIndex, taskArrayIndex, subtaskDataIndex)
+                const currentSubtask = storage.allProjects[projectArrayIndex].getTasks()[taskArrayIndex].getSubtasks()[subtaskArrayIndex];
+
+                const nameField = document.getElementById('name').value;
+                const descriptionField = document.getElementById('description').value;
+                if(nameField){
+                    currentSubtask.setName(nameField);
+                    if(descriptionField){
+                        currentSubtask.setDescription(descriptionField);
+                    }
+                    const newSubtaskDOM = createDOMTask(currentSubtask);
+                    invisibleTaskElement.parentNode.insertBefore(newSubtaskDOM, invisibleTaskElement);
+                    invisibleTaskElement.remove();
+                    form.remove();
+
+                }
+            })
+        }
+
 
     }
 
@@ -351,9 +436,9 @@ const ui = (() => {
         
         addPriorityColor(completeTaskIcon, taskObj.getPriority());
         addCompleteTaskIconFunctionality();
-
         addDeleteIconFunctionality();
         addEditIconFunctionality();
+        addSubtaskIconFunctionality();
 
         //change the bullet point color
         function addPriorityColor(icon, priorityNumber){
@@ -406,26 +491,35 @@ const ui = (() => {
         //complete and delete task are the same functionality for now
         function addCompleteTaskIconFunctionality(){
             completeTaskIcon.addEventListener('click', function() {
-                const taskElement = getTaskFromChildNode(completeTaskIcon);
-                removeTaskFromStorage(taskElement);
-                taskElement.remove();
+                removeRelevantTasksAndSubtasksDOM();
+                removeTaskFromStorage();
+                taskDOM.remove();
             })
         }
         
         function addDeleteIconFunctionality(){
             deleteIcon.addEventListener('click', function() {
-                const taskElement = getTaskFromChildNode(deleteIcon);
-                removeTaskFromStorage(taskElement);
-                taskElement.remove();
+                removeRelevantTasksAndSubtasksDOM();
+                removeTaskFromStorage();
+                taskDOM.remove();
             }) 
         }
 
-        function removeTaskFromStorage(taskElement){
+        function removeTaskFromStorage(){
             const storageProjectIndex = getStorageProjectIndex();
-            const storageTaskIndex = getStorageTaskIndex(storageProjectIndex, taskElement);
+            const storageTaskIndex = getStorageTaskIndex(storageProjectIndex, taskDOM);
             //calls the remove task in project.js
             storage.allProjects[storageProjectIndex].removeTask(storageTaskIndex);
         }
+
+        function removeRelevantTasksAndSubtasksDOM(){
+            const taskIndex = taskObj.getIndex();
+            const allDOMToRemove = Array.from(document.querySelectorAll(`[data-task-index='${taskIndex}']`));
+            allDOMToRemove.forEach(node => {{
+                node.remove();
+            }})
+        }
+
         //end for completing a task and deleting a task
 
 
@@ -440,7 +534,7 @@ const ui = (() => {
                 const currentTaskObject = storage.allProjects[storageProjectIndex].getTasks()[storageTaskIndex];
 
                 taskElement.parentNode.insertBefore(taskForm, taskElement.nextSibling);
-                taskElement.classList.add('invisible');
+                taskElement.setAttribute('id','invisible');
 
                 document.getElementById('name').value = currentTaskObject.getName();
                 document.getElementById('description').value = currentTaskObject.getDescription();
@@ -451,28 +545,80 @@ const ui = (() => {
                 }
             })
         }
-
-
-
         //end for editing a task
 
-
-        function addSubtaskIconFunctionality(plusIcon, taskDiv){
-    /*             plusIcon.addEventListener('click', function(){
-                const subtaskForm = addSubtaskFormDOM().getDOM();
-                taskDiv.parentNode.insertBefore(subtaskForm, taskDiv.nextSibling);
-            }) */
-        }
-
-        //task side button functionalities
-        function deleteIconFunctionality(deleteIcon){
-            deleteIcon.addEventListener('click', function(){
-                removeTask(deleteIcon);
+        function addSubtaskIconFunctionality(){
+            addSubtaskIcon.addEventListener('click', function(){
+                const taskElement = getTaskFromChildNode(addSubtaskIcon);
+                const subtaskForm = createDOMSubtaskForm('add');
+                subtaskForm.setAttribute('data-task-index', taskElement.getAttribute('data-task-index'));
+                taskElement.parentNode.insertBefore(subtaskForm, taskElement.nextSibling);
             })
         }
 
         return taskDOM;
     }
+
+    //creates the subtask dom
+    const createDOMSubtask = (subtaskObj, dataTaskIndex) => {
+        const completeTaskIcon = createTag('i',skip(1), ['fa-regular','fa-circle']);
+        const completeTaskDiv = createContainer('div', ['complete-task-btn'], skip(1), [completeTaskIcon], skip(1));
+
+        const taskInformation = createTag('div', subtaskObj.getName(), ['task-title'], skip(1));
+        if(subtaskObj.getDescription()){
+            const description =  createTag('div', subtaskObj.getDescription(), ['task-description'], skip(1));
+            taskInformation.appendChild(description);
+        }
+        
+        const editIcon = createTag('i', skip(1), ['fa-solid','fa-pen-to-square'], skip(1));
+        const deleteIcon = createTag('i', skip(1), ['fa-solid','fa-trash'], skip(1));      
+        const iconContainer = createContainer('div', ['button-icons'], skip(1), [editIcon, deleteIcon], skip(1));    
+
+        const subtask = createContainer('div', ['subtask'], '', [completeTaskDiv, taskInformation, iconContainer], skip(1)) 
+        subtask.setAttribute('data-task-index', dataTaskIndex);
+        subtask.setAttribute('data-subtask-index', subtaskObj.getIndex());
+
+        addCompleteTaskEventListener();
+        addDeleteTaskEventListener();
+        addEditTaskEventListener();
+        return subtask;
+
+
+        function addCompleteTaskEventListener(){
+            completeTaskIcon.addEventListener('click', function(){
+                const taskDataIndex = subtask.getAttribute('data-task-index');
+                const subtaskDataIndex = subtask.getAttribute('data-subtask-index');
+    
+                const projectArrayIndex = storageLookups.getProjectIndex();
+                const taskArrayIndex = storageLookups.getTaskIndex(projectArrayIndex, taskDataIndex);
+                const subtaskArrayIndex = storageLookups.getSubtaskIndex(projectArrayIndex, taskArrayIndex, subtaskDataIndex)
+                storage.allProjects[projectArrayIndex].getTasks()[taskDataIndex].removeSubtask(subtaskArrayIndex);
+                subtask.remove();
+            })
+        }
+
+        function addDeleteTaskEventListener(){
+            deleteIcon.addEventListener('click', function(){
+                const taskDataIndex = subtask.getAttribute('data-task-index');
+                const subtaskDataIndex = subtask.getAttribute('data-subtask-index');
+    
+                const projectArrayIndex = storageLookups.getProjectIndex();
+                const taskArrayIndex = storageLookups.getTaskIndex(projectArrayIndex, taskDataIndex);
+                const subtaskArrayIndex = storageLookups.getSubtaskIndex(projectArrayIndex, taskArrayIndex, subtaskDataIndex)
+                storage.allProjects[projectArrayIndex].getTasks()[taskDataIndex].removeSubtask(subtaskArrayIndex);
+                subtask.remove();
+            })           
+        }
+
+        function addEditTaskEventListener(){
+            editIcon.addEventListener('click', function(){
+                subtask.setAttribute('id','invisible');
+                const subtaskForm = createDOMSubtaskForm('edit');
+                subtask.parentNode.insertBefore(subtaskForm, subtask);
+            })
+        }
+    }
+
 
     //find the array indicies of projects, tasks, and subtasks
     const storageLookups = (() => {
@@ -525,104 +671,7 @@ const ui = (() => {
 export default ui;
 
 
-/* const addSubtaskFormDOM = () => {
-    function getDOM(){
-        const container = getContainer();
-        const form = getForm();
-        const formActions = getFormActions();
-
-        container.appendChild(form);
-        container.appendChild(formActions);
-        return container;
-    }
-    
-    function getContainer(){
-        const container = document.createElement('div');
-        container.setAttribute('id','add-subtask-form-container');
-        return container;
-    }
-
-    function getForm(){
-        const form = document.createElement('form');
-        form.setAttribute('id','add-subtask-form');
-
-        const nameInput = createInput('text', 'name', 'Name', true, true);
-        const descriptionInput = createInput('text', 'description', 'Description', false, false);
-        form.appendChild(nameInput);
-        form.appendChild(descriptionInput);
-        return form;
-    }
-
-    function getFormActions(){
-        const containerDiv = document.createElement('div');
-        containerDiv.setAttribute('id','form-actions-div');
-
-        const cancelBtn = document.createElement('button');
-        cancelBtn.setAttribute('id','cancel-add-subtask-form');
-        cancelBtn.innerText = 'Cancel';
-
-        const submitBtn = document.createElement('button');
-        submitBtn.setAttribute('id','add-subtask-submit-button');
-        submitBtn.innerText = 'Add Subtask';
-
-        addCancelBtnFunctionality(cancelBtn);
-        addSubmitBtnFunctionality(submitBtn);
-
-        containerDiv.appendChild(cancelBtn);
-        containerDiv.appendChild(submitBtn);
-
-        return containerDiv;
-    }
-
-    //removes the form and adds the add task text back
-    function addCancelBtnFunctionality(cancelBtn){
-        cancelBtn.addEventListener('click', function(){
-            const container = document.getElementById('container');
-            const formContainer = document.getElementById('add-subtask-form-container');
-            formContainer.remove();
-        }, {once:true});
-    }
-
-    //removes the form and adds the task dom
-    //need to add error message of some sort when there's no text in the name field
-    function addSubmitBtnFunctionality(submitBtn){
-        submitBtn.addEventListener('click', function(){
-            const nameField = document.getElementById('name').value;
-            const descriptionField = document.getElementById('description').value;
-            if(nameField){
-                const subtaskFormContainer = document.getElementById('add-subtask-form-container');
-                let projectIndexInArray = storageLookups.getProjectIndex();
-                //let taskIndexInArray = storageLookups.getTaskIndex(orih)
-                let newSubtask = subtask(nameField, descriptionField);
-                // newSubtask = storage.allProjects[projectIndexInArray].allTasks[taskIndexInArray].addSubtask(newSubtask);
-                let newSubtaskDOM = subtaskDOM(newSubtask).getDOM();
-
-                subtaskFormContainer.parentNode.insertBefore(newSubtaskDOM, subtaskFormContainer)
-                subtaskFormContainer.remove();
-
-                //this updates the task with the current index
-
-                
-            } 
-        })          
-    }
-
-    //returns index of project in all projects array
-    function getProjectIndexInArray(){
-        let projectIndexInArray = 0;
-        let projectDataIndex = document.getElementById('project-header').getAttribute('data-index');
-        storage.allProjects.forEach((project, index) => {
-            if(project.getIndex() == projectDataIndex){
-                projectIndexInArray = index;
-                return;
-            }
-        })
-        return projectIndexInArray;
-    }
-
-    return {getDOM};        
-}
-
+/* 
 //creates DOM of one subtask
 const subtaskDOM = (subtaskObj) => {
     function createSubtaskDiv(){
@@ -734,167 +783,4 @@ const renderTasks = () => {
     }
 
     return {renderDefault, clearAllTasks};
-}
-
-
- */
-
-/* const motivationalMessageDOM = () => {
-    function createMotivationalMessage(motivationalMessageObj){
-        const body = document.querySelector('body');
-        const parentDiv = motivationalMessageContainer();
-        parentDiv.appendChild(motivationalMessageHeader(motivationalMessageObj.header));
-        parentDiv.appendChild(motivationalMessage(motivationalMessageObj.message));
-        parentDiv.appendChild(motivationalAuthor(motivationalMessageObj.author));
-        body.appendChild(parentDiv);
-    }
-
-
-    function motivationalMessageContainer(){
-        const container = document.createElement('div');
-        container.classList.add('content-margin');
-        container.setAttribute('id','motivational-message');
-        return container;
-    }
-
-    function motivationalMessageHeader(headerText) {
-        const headerDiv = document.createElement('div');
-        headerDiv.setAttribute('id','motivational-message-header');
-
-        const invisibleButtonsDiv = buttonsDiv(false);
-        invisibleButtonsDiv.classList.add('invisible-elements');
-
-        const visibleButtonsDiv = buttonsDiv(true);
-
-        const motivationalMessage = document.createElement('p');
-        motivationalMessage.innerText = headerText;
-
-        headerDiv.appendChild(invisibleButtonsDiv);
-        headerDiv.appendChild(motivationalMessage);
-        headerDiv.appendChild(visibleButtonsDiv);
-
-        return headerDiv;
-    }
-
-    function buttonsDiv(isVisible) {
-        const buttonsDiv = document.createElement('div');
-        
-        const settingsBtn = document.createElement('button');
-        const settingsIcon = document.createElement('i');
-        settingsIcon.classList.add('fa-solid');
-        settingsIcon.classList.add('fa-gear');
-        settingsBtn.appendChild(settingsIcon);
-
-        const closeBtn = document.createElement('button');
-        const closeIcon = document.createElement('i');
-        closeIcon.classList.add('fa-solid');
-        closeIcon.classList.add('fa-x');
-        closeBtn.appendChild(closeIcon);
-
-        buttonsDiv.appendChild(settingsBtn);
-        buttonsDiv.appendChild(closeBtn);
-
-        if(isVisible){
-            settingsBtn.setAttribute('id','motivational-message-settings-btn');
-            closeBtn.setAttribute('id', 'motivational-message-close-btn');     
-        }
-        else {
-            buttonsDiv.classList.add('invisible-elements');
-        }
-
-        return buttonsDiv;
-    }
-
-    function motivationalMessage(message) {
-        const messageParagraph = document.createElement('p');
-        messageParagraph.innerText = message;
-        return messageParagraph;
-    }
-
-    function motivationalAuthor(author) {
-        const messageAuthor = document.createElement('p');
-        messageAuthor.innerText = author;
-        return messageAuthor;        
-    }
-
-    return {createMotivationalMessage};
-}
-
-const motivationalMessageDOMFunctionality = () => {
-    function addSettingBtnFunctionality(){
-        const settingBtn = document.getElementById('motivational-message-settings-btn');
-    }
-    
-    function createModalForm() {
-        
-    }
-
-    function addCloseBtnFunctionality() {
-        const closeBtn = document.getElementById('motivational-message-close-btn');
-        closeBtn.addEventListener('click', function() {
-            const motivationalMessageDiv = document.getElementById('motivational-message');
-            motivationalMessageDiv.remove();
-        })  
-    }
-
-    function addBtnFunctionality() {
-        addCloseBtnFunctionality();
-        addSettingBtnFunctionality();
-    }
-
-    return {addBtnFunctionality};
-}
- */
-/* 
-    //need to clean this up
-    //add all tasks and tasks with sections
-    function addSectionsTasksDOM(parentDiv, allSectionsArray){
-        allSectionsArray.forEach(section => {
-            const sectionDOM = createSectionDOM(section).getSectionDOM();
-            section.tasks.forEach(task => {
-                const taskDOM = createTaskDOM(task).getTaskDOM();
-                sectionDOM.appendChild(taskDOM);
-                task.subtasks.forEach(subtask => {
-                    const subtaskDOM = createSubtaskDOM(subtask).getSubtaskDOM();
-                    parentDiv.appendChild(subtaskDOM);
-                })
-            })
-            parentDiv.appendChild(sectionDOM);    
-        })
-    }
- */
-/* 
-    const createSectionDOM = (sectionObj) => {
-        function createSectionDiv(){
-            const sectionDiv = document.createElement('div');
-            sectionDiv.classList.add('section');
-            return sectionDiv;
-        }
-    
-        function createSectionHeader(sectionObj){
-            const sectionHeaderDiv = document.createElement('div');
-            sectionHeaderDiv.classList.add('section-header');
-    
-            const sectionTitle = document.createElement('section-title');
-            sectionTitle.classList.add('section-title');
-            sectionTitle.innerText = sectionObj.name;
-    
-            const sectionDropdownContainer = document.createElement('div');
-            sectionDropdownContainer.classList.add('section-dropdown');
-            
-            const dropdownIcon = document.createElement('i');
-            dropdownIcon.classList.add('fa-sold','fa-caret-down');
-            sectionDropdownContainer.appendChild(dropdownIcon);
-            sectionHeaderDiv.appendChild(sectionTitle);
-            sectionHeaderDiv.appendChild(sectionDropdownContainer);
-            return sectionHeaderDiv;
-        }
-    
-        function getSectionDOM(){
-            const sectionDiv = createSectionDiv();
-            sectionDiv.appendChild(createSectionHeader(sectionObj));
-            return sectionDiv;
-        }
-    
-        return {getSectionDOM};
-    } */
+} */

@@ -31,12 +31,9 @@ const project = (name, tasks = [], index) => {
         return task;
     }
 
+    //removes the task from the task array
     function removeTask(taskIndex){
-        tasks.forEach((task, index) => {
-            if(task.getIndex() === taskIndex){
-                tasks.splice(index, 1);
-            }
-        })
+        tasks.splice(taskIndex, 1);
     }
 
     return {getName, getIndex, getTasks, setName, setIndex, addTask, removeTask}

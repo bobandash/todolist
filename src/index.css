@@ -240,7 +240,7 @@ input[type="submit"]{
         "bullet-points task-headers button-icons";
 }
 
-.invisible {
+#invisible {
     display: none;
 }
 

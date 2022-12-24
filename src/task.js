@@ -66,9 +66,13 @@ const task = (
 
     //need to set a unique index for subtask after it's created
     function addSubtask(subtaskObj){
-        subtaskObj.setIndex(currSubtaskIndex);
+        subtaskObj.setIndex(currSubtaskIndex.getIndex());
         subtasks.push(subtaskObj);
-        incrementSubtaskIndex;
+        currSubtaskIndex.incrementIndex();
+    }
+
+    function removeSubtask(index){
+        subtasks.splice(index, 1);
     }
 
     function editSubtask(subtaskObj){
@@ -81,7 +85,7 @@ const task = (
     }
 
     return {getName, getDescription, getDueDate, getEstimatedTime, getIndex, getPriority, getSubtasks,
-            setName, setPriority, setDescription, setDueDate, setEstimatedTime, setIndex, addSubtask};
+            setName, setPriority, setDescription, setDueDate, setEstimatedTime, setIndex, addSubtask, removeSubtask};
 }
 
 

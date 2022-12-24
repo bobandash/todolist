@@ -4,6 +4,10 @@ const subtask = (
     index) =>
 {
 
+    function setIndex(newIndex){
+        index = newIndex;
+    }
+
     function getIndex(){
         return index;
     }
@@ -16,7 +20,7 @@ const subtask = (
         return name;
     }
 
-    return {getIndex, getName, getDescription};
+    return {getIndex, getName, getDescription, setIndex};
 }
 
 export default subtask;
