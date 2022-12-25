@@ -384,8 +384,8 @@ const ui = (() => {
         function addSubmitEditTaskFunctionality(){
             submitBtn.addEventListener('click', function(){
                 const invisibleTaskElement = document.getElementById('invisible');
-                const taskDataIndex = subtask.getAttribute('data-task-index');
-                const subtaskDataIndex = subtask.getAttribute('data-subtask-index');
+                const taskDataIndex = form.getAttribute('data-task-index');
+                const subtaskDataIndex = form.getAttribute('data-subtask-index');
     
                 const projectArrayIndex = storageLookups.getProjectIndex();
                 const taskArrayIndex = storageLookups.getTaskIndex(projectArrayIndex, taskDataIndex);
@@ -399,7 +399,7 @@ const ui = (() => {
                     if(descriptionField){
                         currentSubtask.setDescription(descriptionField);
                     }
-                    const newSubtaskDOM = createDOMTask(currentSubtask);
+                    const newSubtaskDOM = createDOMSubtask(currentSubtask);
                     invisibleTaskElement.parentNode.insertBefore(newSubtaskDOM, invisibleTaskElement);
                     invisibleTaskElement.remove();
                     form.remove();
@@ -574,7 +574,7 @@ const ui = (() => {
 
         const taskInformation = createTag('div', subtaskObj.getName(), ['task-title'], skip(1));
         if(subtaskObj.getDescription()){
-            const description =  createTag('div', subtaskObj.getDescription(), ['task-description'], skip(1));
+            const description = createTag('div', subtaskObj.getDescription(), ['task-description'], skip(1));
             taskInformation.appendChild(description);
         }
         
@@ -622,7 +622,11 @@ const ui = (() => {
             editIcon.addEventListener('click', function(){
                 subtask.setAttribute('id','invisible');
                 const subtaskForm = createDOMSubtaskForm('edit');
+                subtaskForm.setAttribute('data-task-index', dataTaskIndex);
+                subtaskForm.setAttribute('data-subtask-index', subtaskObj.getIndex());
                 subtask.parentNode.insertBefore(subtaskForm, subtask);
+                document.getElementById('name').value = subtaskObj.getName();
+                document.getElementById('description').value = subtaskObj.getDescription();
             })
         }
     }
@@ -677,118 +681,3 @@ const ui = (() => {
 })();
 
 export default ui;
-
-
-/* 
-//creates DOM of one subtask
-const subtaskDOM = (subtaskObj) => {
-    function createSubtaskDiv(){
-        const subtaskDiv = document.createElement('div');
-        subtaskDiv.classList.add('subtask');
-        return subtaskDiv;
-    }
-
-    function createCompleteSubtaskDiv(){
-        const containerDiv = document.createElement('div');
-        containerDiv.classList.add('complete-task-btn');
-
-        const circleIcon = document.createElement('i');
-        circleIcon.classList.add('fa-regular','fa-circle');
-
-        containerDiv.appendChild(circleIcon);
-        return containerDiv;
-    }
-
-    function createSubtaskTitleDiv(subtaskObj){
-        const titleDiv = document.createElement('div');
-        titleDiv.classList.add('task-title');
-        titleDiv.innerText = subtaskObj.getName();
-        return titleDiv;
-    }
-
-    function createSubtaskDescriptionDiv(subtaskObj){
-        const descriptionDiv = document.createElement('div');
-        descriptionDiv.classList.add('task-description');
-        descriptionDiv.innerText = subtaskObj.getDescription();
-        return descriptionDiv;
-    }
-
-    function createSubtaskButtonIcons() {
-        const buttonsIconDiv = document.createElement('div');
-        buttonsIconDiv.classList.add('button-icons');
-
-        const editIcon = document.createElement('i');
-        editIcon.classList.add('fa-solid','fa-pen-to-square');
-
-        const deleteIcon = document.createElement('i');
-        deleteIcon.classList.add('fa-solid','fa-trash');
-
-        buttonsIconDiv.appendChild(editIcon);
-        buttonsIconDiv.appendChild(deleteIcon);
-        return buttonsIconDiv;
-    }
-
-    function getDOM(){
-        const containerDiv = createSubtaskDiv();
-        const completeSubtaskDiv = createCompleteSubtaskDiv();
-        const subtaskTitleDiv = createSubtaskTitleDiv(subtaskObj);
-        const subtaskDescriptionDiv = createSubtaskDescriptionDiv(subtaskObj);
-        const subtaskBtnIcons = createSubtaskButtonIcons();
-
-        containerDiv.appendChild(completeSubtaskDiv);
-        containerDiv.appendChild(subtaskTitleDiv);
-        subtaskTitleDiv.appendChild(subtaskDescriptionDiv);
-        containerDiv.appendChild(subtaskBtnIcons);
-
-        return containerDiv;
-    }
-
-    return {getDOM};
-} */
-
-
-
-
-
-
-
-
-/* 
-const renderTasks = () => {
-    const addMotivationalMessage = () => {
-        const motivationalMessagesArray = [];
-        const DOM = motivationalMessageDOM();
-        const btnFunctionality = motivationalMessageDOMFunctionality();
-        //object declaration for motivational messages
-        function motivationalMessage(header, message, author = ''){
-            return {header, message, author};
-        }
-    
-        //preset methods for motivational message
-        function addDefaultMotivationalMessages() {
-            const motivationalMessage1 = motivationalMessage('Motivational Message','Yesterday you said tomorrow, so just do it. Don\'t let your dreams be dreams.','Shia LaBeouf');
-            const motivationalMessage2 =  motivationalMessage('Motivational Message',"The most important investment you can make is in yourself.",'Warren Buffett');
-            const motivationalMessage3 = motivationalMessage('Personal Message','You can play Pokemon if you finish coding this to-do list.','Bruce');
-            motivationalMessagesArray.push(motivationalMessage3);
-        }
-    
-        function chooseOneMotivationalMessage() {
-            const random = Math.floor(Math.random() * motivationalMessagesArray.length);
-            return motivationalMessagesArray[random];
-        }
-    
-        function deleteMessage(index) {
-            motivationalMessagesArray.splice(index, 1);
-        }
-    
-        function renderDefaultMessages() {
-            addDefaultMotivationalMessages();
-            DOM.createMotivationalMessage(chooseOneMotivationalMessage());
-            btnFunctionality.addBtnFunctionality();
-        }
-    
-        return {renderDefaultMessages, deleteMessage};
-    }
-
-    return {renderDefault, clearAllTasks};
-} */

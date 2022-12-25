@@ -20,7 +20,15 @@ const subtask = (
         return name;
     }
 
-    return {getIndex, getName, getDescription, setIndex};
+    function setName(newName){
+        name = newName;
+    }
+
+    function setDescription(newDescription){
+        description = newDescription;
+    }
+
+    return {getIndex, getName, getDescription, setIndex, setName, setDescription};
 }
 
 export default subtask;
