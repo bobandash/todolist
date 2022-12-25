@@ -73,11 +73,9 @@ const skip = (num) => new Array(num);
 const ui = (() => {
     function initialRender(){
         const bodyElem = document.querySelector('body');
-        
-        const test = document.createElement('div');
-        const datepicker = new Datepicker(test, {
-            // ...options
-          }); 
+
+        addHamburgerMenuBtnFunctionality();
+
         const containerDiv = createDOMContainer();
         const inboxProject = storage.allProjects.filter(project => project.getName() === 'Inbox')[0];
         const header = createDOMProjectHeader(inboxProject);
@@ -94,6 +92,20 @@ const ui = (() => {
         bodyElem.appendChild(containerDiv);       
     }
 
+    function addHamburgerMenuBtnFunctionality(){
+        const hamburgerMenuBtn = document.getElementById('mobile-pop-icon');
+        hamburgerMenuBtn.addEventListener('click', function(){
+            const sidebar = document.getElementById('hamburger-menu');
+            const body = document.querySelector('body');
+            if(sidebar.classList.contains('hide')){
+                sidebar.classList.remove('hide');
+                body.classList.add('opaque-background');
+            } else {
+                sidebar.classList.add('hide');
+                body.classList.remove('opaque-background');
+            }
+        })
+    }
 
     //entire container that holds all the tasks, unique id is container
     function createDOMContainer(){
@@ -108,9 +120,9 @@ const ui = (() => {
 
     //creates the div that when clicked, the add new task form appears
     function createDOMAddTask(){
-        const plusIcon = createTag('i', skip(1), ['fa','fa-plus'], skip(1));
+        const plusIcon = createTag('i', skip(1), ['fa','fa-plus', 'pointer'], skip(1));
         const addTaskText = createTag('div', 'Add Task', ['add-task-text'], skip(1));
-        const addTaskDiv = createContainer('div', skip(1), 'add-task-clickable-div', [plusIcon, addTaskText], skip(1));
+        const addTaskDiv = createContainer('div', ['pointer'], 'add-task-clickable-div', [plusIcon, addTaskText], skip(1));
         addTaskDiv.addEventListener('click', function(){
             if(hasForm()){
                 revertForm();
@@ -439,14 +451,14 @@ const ui = (() => {
 
     //creates the task dom
     function createDOMTask(taskObj){
-        const completeTaskIcon = createTag('i',skip(1), ['fa-regular','fa-circle']);
+        const completeTaskIcon = createTag('i',skip(1), ['fa-regular','fa-circle', 'pointer']);
         const completeTaskDiv = createContainer('div', ['complete-task-btn'], skip(1), [completeTaskIcon], skip(1));
 
         const taskInformationDiv = createTag('div', taskObj.getName(), ['task-title'], skip(1));
 
-        const addSubtaskIcon = createTag('i', skip(1), ['fa-solid','fa-square-plus'], skip(1));
-        const editIcon = createTag('i', skip(1), ['fa-solid','fa-pen-to-square'], skip(1));
-        const deleteIcon = createTag('i', skip(1), ['fa-solid','fa-trash'], skip(1));      
+        const addSubtaskIcon = createTag('i', skip(1), ['fa-solid','fa-square-plus', 'pointer'], skip(1));
+        const editIcon = createTag('i', skip(1), ['fa-solid','fa-pen-to-square', 'pointer'], skip(1));
+        const deleteIcon = createTag('i', skip(1), ['fa-solid','fa-trash', 'pointer'], skip(1));      
         const iconContainer = createContainer('div', ['button-icons'], skip(1), [addSubtaskIcon, editIcon, deleteIcon], skip(1));
 
         if(taskObj.getEstimatedTime()){
@@ -601,7 +613,7 @@ const ui = (() => {
 
     //creates the subtask dom
     const createDOMSubtask = (subtaskObj, dataTaskIndex) => {
-        const completeTaskIcon = createTag('i',skip(1), ['fa-regular','fa-circle']);
+        const completeTaskIcon = createTag('i',skip(1), ['fa-regular','fa-circle', 'pointer']);
         const completeTaskDiv = createContainer('div', ['complete-task-btn'], skip(1), [completeTaskIcon], skip(1));
 
         const taskInformation = createTag('div', subtaskObj.getName(), ['task-title'], skip(1));
@@ -610,8 +622,8 @@ const ui = (() => {
             taskInformation.appendChild(description);
         }
         
-        const editIcon = createTag('i', skip(1), ['fa-solid','fa-pen-to-square'], skip(1));
-        const deleteIcon = createTag('i', skip(1), ['fa-solid','fa-trash'], skip(1));      
+        const editIcon = createTag('i', skip(1), ['fa-solid','fa-pen-to-square', 'pointer'], skip(1));
+        const deleteIcon = createTag('i', skip(1), ['fa-solid','fa-trash', 'pointer'], skip(1));      
         const iconContainer = createContainer('div', ['button-icons'], skip(1), [editIcon, deleteIcon], skip(1));    
 
         const subtask = createContainer('div', ['subtask'], '', [completeTaskDiv, taskInformation, iconContainer], skip(1)) 
@@ -653,7 +665,7 @@ const ui = (() => {
         function addEditTaskEventListener(){
             editIcon.addEventListener('click', function(){
                 if(hasForm()){
-                    removeForm();
+                    revertForm();
                 }
                 subtask.setAttribute('id','invisible');
                 const subtaskForm = createDOMSubtaskForm('edit');
@@ -664,6 +676,7 @@ const ui = (() => {
                 document.getElementById('description').value = subtaskObj.getDescription();
             })
         }
+
     }
 
 
@@ -707,7 +720,7 @@ const ui = (() => {
     }
 
     const clearAllTasks = () => {
-        const containerDiv = document.getElementById('containers');
+        const containerDiv = document.getElementById('container');
         containerDiv.remove();
     }
 

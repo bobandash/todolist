@@ -20,9 +20,10 @@ i {
     margin-left: .2em;
 }
 
-body {
+body, html {
     margin: 0;
     padding: 0;
+    height: 100%;
 }
 
 h1, h2, h3, h4, h5 {
@@ -30,6 +31,10 @@ h1, h2, h3, h4, h5 {
     text-align: center;
 }
 
+
+.opaque-background {
+    background-color: rgba(211, 211, 211, 0.575);
+}
 
 button {
     background-size: 100%;
@@ -48,7 +53,8 @@ header {
     box-shadow: 0px 3px 15px rgba(100, 100, 100, 0.29);
     -moz-box-shadow: 0px 3px 15px rgba(100, 100, 100, 0.29);
     -webkit-box-shadow: 0px 3px 15px rgba(100, 100, 100, 0.29);
-    position: relative;
+    position: sticky;
+    top: 0px;
 }
 
 header i {
@@ -188,8 +194,12 @@ input[type="submit"]{
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
 }
+
+.task-form-icons:nth-child(n+2){
+    margin-left: .25em;
+}
+
 
 .task-form-icons, #form-actions-div button {
     border: 1px solid gray;;
@@ -334,4 +344,62 @@ form {
 
 #modal-form-close-btn {
     align-self: flex-end;
+}
+
+
+.pointer {
+    cursor: pointer;
+}
+
+/* for the hamburger menu */
+#hamburger-menu {
+    background-color: rgb(236, 236, 236);
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    margin: 0;
+    padding: 0;
+    width: 65%;
+    height: 100%;
+    position: fixed;
+}
+
+.hide {
+    display: none;
+}
+
+#hamburger-menu div {
+    margin-left: 1.5em;
+}
+
+#hamburger-menu div li:nth-child(1){
+    margin-top: 1em;
+}
+
+#hamburger-menu li {
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.25em;
+    margin-right: 1em;
+    font-size: 1.25em;
+}
+
+#hamburger-menu li a {
+    color: black;
+    text-decoration: none;
+    padding-left: .25em;
+}
+
+#hamburger-menu li a:hover {
+    background-color: lightgray;
+}
+
+
+/* end hamburger menu */
+
+
+/* for desktop responsiveness */
+@media only screen and (min-width: 800px){
+    #container {
+        margin: 1.5em 6em 0px 4em;
+    }
 }
