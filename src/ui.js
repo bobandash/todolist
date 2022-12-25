@@ -549,11 +549,19 @@ const ui = (() => {
 
         function addSubtaskIconFunctionality(){
             addSubtaskIcon.addEventListener('click', function(){
-                const taskElement = getTaskFromChildNode(addSubtaskIcon);
+                const lastSubtaskOrTask = getLastRelevantTaskElement();
                 const subtaskForm = createDOMSubtaskForm('add');
-                subtaskForm.setAttribute('data-task-index', taskElement.getAttribute('data-task-index'));
-                taskElement.parentNode.insertBefore(subtaskForm, taskElement.nextSibling);
+                subtaskForm.setAttribute('data-task-index', taskDOM.getAttribute('data-task-index'));
+                lastSubtaskOrTask.parentNode.insertBefore(subtaskForm, lastSubtaskOrTask.nextSibling);
             })
+        }
+
+        //get last subtask or task element that has the same task index
+        //subtask form should be appended at the last subtask of the dom
+        //
+        function getLastRelevantTaskElement(){
+            const allElementsWithDataTaskIndex = Array.from(document.querySelectorAll(`[data-task-index='${taskObj.getIndex()}']`));
+            return allElementsWithDataTaskIndex[allElementsWithDataTaskIndex.length-1];
         }
 
         return taskDOM;
