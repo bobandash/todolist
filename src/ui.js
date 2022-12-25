@@ -78,7 +78,6 @@ const ui = (() => {
         const datepicker = new Datepicker(test, {
             // ...options
           }); 
-/*         addMotivationalMessage().renderDefaultMessages(); */
         const containerDiv = createDOMContainer();
         const inboxProject = storage.allProjects.filter(project => project.getName() === 'Inbox')[0];
         const header = createDOMProjectHeader(inboxProject);
@@ -94,6 +93,7 @@ const ui = (() => {
         containerDiv.appendChild(addTaskDiv);
         bodyElem.appendChild(containerDiv);       
     }
+
 
     //entire container that holds all the tasks, unique id is container
     function createDOMContainer(){
@@ -112,6 +112,9 @@ const ui = (() => {
         const addTaskText = createTag('div', 'Add Task', ['add-task-text'], skip(1));
         const addTaskDiv = createContainer('div', skip(1), 'add-task-clickable-div', [plusIcon, addTaskText], skip(1));
         addTaskDiv.addEventListener('click', function(){
+            if(hasForm()){
+                revertForm();
+            }
             const container = document.getElementById('container');
             const addTaskForm = createDOMTaskForm('add');
             container.appendChild(addTaskForm);
@@ -119,6 +122,30 @@ const ui = (() => {
         }, {once: true})
 
         return addTaskDiv;
+    }
+
+    //stylistic decision to only have one form display at a time in to do list
+    //helper functions for forms
+    function hasForm(){
+        if(document.getElementById('task-form')){
+            return true;
+        }
+        return false;
+    }
+
+    //removes the existing form and for edit forms, remove the invisible id from task/subtask
+    function revertForm(){
+        const form = document.getElementById('task-form');
+        const invisibleElement = document.getElementById('invisible');
+        const addTaskDiv = document.getElementById('add-task-clickable-div');
+        if(invisibleElement){
+            invisibleElement.setAttribute('id','');
+        }
+        if(!addTaskDiv){
+            const container = document.getElementById('container');
+            container.appendChild(createDOMAddTask());
+        }
+        form.remove();
     }
 
     //creates the form that when submitted, adds a new task to the dom
@@ -363,7 +390,6 @@ const ui = (() => {
                     const taskArrayIndex = storageLookups.getTaskIndex(projectArrayIndex, dataTaskIndex);
                     const currentTaskInStorage = storage.allProjects[projectArrayIndex].getTasks()[taskArrayIndex];
                     
-                    //this doesn't work
                     currentTaskInStorage.addSubtask(newSubtask);
 
                     const subtaskDOM = createDOMSubtask(newSubtask, dataTaskIndex);
@@ -526,6 +552,9 @@ const ui = (() => {
         //for editing a task
         function addEditIconFunctionality(){
             editIcon.addEventListener('click', function() {
+                if(hasForm()){
+                    revertForm();
+                }
                 const taskElement = getTaskFromChildNode(editIcon);
                 const taskForm = createDOMTaskForm('edit');
 
@@ -549,6 +578,9 @@ const ui = (() => {
 
         function addSubtaskIconFunctionality(){
             addSubtaskIcon.addEventListener('click', function(){
+                if(hasForm()){
+                    revertForm();
+                }
                 const lastSubtaskOrTask = getLastRelevantTaskElement();
                 const subtaskForm = createDOMSubtaskForm('add');
                 subtaskForm.setAttribute('data-task-index', taskDOM.getAttribute('data-task-index'));
@@ -620,6 +652,9 @@ const ui = (() => {
 
         function addEditTaskEventListener(){
             editIcon.addEventListener('click', function(){
+                if(hasForm()){
+                    removeForm();
+                }
                 subtask.setAttribute('id','invisible');
                 const subtaskForm = createDOMSubtaskForm('edit');
                 subtaskForm.setAttribute('data-task-index', dataTaskIndex);
