@@ -72,11 +72,14 @@ const skip = (num) => new Array(num);
 
 const ui = (() => {
     function initialRender(){
-        const bodyElem = document.querySelector('body');
-
         addHamburgerMenuBtnFunctionality();
         addHamburgerNavItemsFunctionality();
+        renderInbox();
+     
+    }
 
+    function renderInbox(){
+        const bodyElem = document.querySelector('body');
         const containerDiv = createDOMContainer();
         const inboxProject = storage.allProjects.filter(project => project.getName() === 'Inbox')[0];
         const header = createDOMProjectHeader(inboxProject);
@@ -90,7 +93,7 @@ const ui = (() => {
             }
         })
         containerDiv.appendChild(addTaskDiv);
-        bodyElem.appendChild(containerDiv);       
+        bodyElem.appendChild(containerDiv);  
     }
 
     function addHamburgerMenuBtnFunctionality(){
@@ -113,11 +116,20 @@ const ui = (() => {
         addProjectFunctionality();
     }
 
+    //ads default nav functionalities for inbox, today, and this week
     function addDefaultHamburgerNavItemsFunctionality(){
         const inboxNav = document.querySelector('a[data-project-index="0"]');
+        const todayNav = document.querySelector('a[data-project-index="1"]');
+        const thisWeekNav = document.querySelector('a[data-project-index="2"]');
         
+        inboxNav.addEventListener('click', function(){
+            const container = document.getElementById('container');
+            container.remove();
+            renderInbox();
+        })
     }
 
+    //creates new projects from clicking on the sidebar and typing in a project name
     function addProjectFunctionality(){
         const addProjectNode = document.getElementById('add-project-button');
         addProjectNodeFunctionality(addProjectNode);
@@ -145,7 +157,7 @@ const ui = (() => {
             const form = createContainer('form', skip(1), 'add-project-form', [addProjectInput, confirmDiv, cancelDiv], skip(1));
 
             addCancelBtnFormFunctionality(cancelDiv);
-            addConfirmBtnFormFunctionality(confirmDiv, addProjectInput);
+            addConfirmBtnFormFunctionality(form, confirmDiv, addProjectInput);
 
             return form;
         }
@@ -159,20 +171,27 @@ const ui = (() => {
             })
         }
 
-        function addConfirmBtnFormFunctionality(confirmDiv, projectNameInput){
-            confirmDiv.addEventListener('click', function(){
-                const form = document.getElementById('add-project-form');
-                const projectName = projectNameInput.value;
-                if(projectName){
-                    let newProject = project(projectName);
-                    storage.addProject(newProject);
-                    const projectLink = createProjectNode(newProject);
-                    const addProjectText = createAddProjectText();
-                    form.parentNode.insertBefore(projectLink, form);
-                    form.parentNode.insertBefore(addProjectText, form);
-                    form.remove();
+        function addConfirmBtnFormFunctionality(form, confirmDiv, projectNameInput){
+            confirmDiv.addEventListener('click', createNewProject)
+            form.addEventListener('keydown', function(event){
+                if(event.key === 'Enter'){
+                    createNewProject();
                 }
             })
+
+            function createNewProject(){
+                    const form = document.getElementById('add-project-form');
+                    const projectName = projectNameInput.value;
+                    if(projectName){
+                        let newProject = project(projectName);
+                        storage.addProject(newProject);
+                        const projectLink = createProjectNode(newProject);
+                        const addProjectText = createAddProjectText();
+                        form.parentNode.insertBefore(projectLink, form);
+                        form.parentNode.insertBefore(addProjectText, form);
+                        form.remove();
+                    }
+                }
         }
 
         //element that contains project name, if clicked on then clear all tasks and load the relevant tasks
@@ -186,8 +205,9 @@ const ui = (() => {
             addProjectLinkEventListener();
 
             function addProjectLinkEventListener(){
-                projectLinkContainer.addEventListener('click', function(){
-                    const container = document.getElementById('container');
+                projectLinkContainer.addEventListener('click', addProject);
+
+                function addProject(){
                     clearAllTasksDOM();
                     container.appendChild(createDOMProjectHeader(projectObject));
 
@@ -195,7 +215,8 @@ const ui = (() => {
                     const relevantTasks = storage.allProjects[projectIndexArray].getTasks();
                     addAllTasksDOM(container, relevantTasks);
                     container.appendChild(createDOMAddTask());
-                })
+                }
+
             }
 
             return projectLinkContainer;
