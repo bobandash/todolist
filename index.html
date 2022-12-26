@@ -15,15 +15,16 @@
         <h1>Let's Do</h1>
         <i class="fa-regular fa-user"></i>
     </header>
-    <ul id = "hamburger-menu" class = "hide">
+    <ul id = "hamburger-menu">
+<!--         class = "hide" -->
         <div id = "default-menu-fields">
-            <li><a href="#">Inbox</a></li>
-            <li><a href="#">Today</a></li>
-            <li><a href="#">This Week</a></li>
+            <li><a data-project-index = "0" href="#">Inbox</a></li>
+            <li><a data-project-index = "1" href="#">Today</a></li>
+            <li><a data-project-index = "2" href="#">This Week</a></li>
         </div>
         <div id = "project-menu-fields">
             <li>Projects</li>
-            <li><a href="#">+ Add Projects</a></li>
+            <li id = "add-project-button"><a href="#">+ Add Projects</a></li>
         </div>
     </ul>
 </body>
