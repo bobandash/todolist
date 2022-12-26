@@ -75,7 +75,6 @@ const ui = (() => {
         addHamburgerMenuBtnFunctionality();
         addHamburgerNavItemsFunctionality();
         renderInbox();
-     
     }
 
     function renderInbox(){
@@ -119,8 +118,8 @@ const ui = (() => {
     //ads default nav functionalities for inbox, today, and this week
     function addDefaultHamburgerNavItemsFunctionality(){
         const inboxNav = document.querySelector('a[data-project-index="0"]');
-        const todayNav = document.querySelector('a[data-project-index="1"]');
-        const thisWeekNav = document.querySelector('a[data-project-index="2"]');
+/*         const todayNav = document.querySelector('a[data-project-index="1"]');
+        const thisWeekNav = document.querySelector('a[data-project-index="2"]'); */
         
         inboxNav.addEventListener('click', function(){
             const container = document.getElementById('container');
@@ -380,8 +379,15 @@ const ui = (() => {
         function addDueDatePopoverEventListener(dueDateDiv, parentDiv){
             dueDateDiv.addEventListener('click', function(){
                 removeActivePopovers();
-                const spanHelper = createTag('span', skip(1), ['active-popover']. skip(1));
-                const dateInput = new Datepicker(spanHelper);
+                const spanHelper = createTag('span', skip(1), ['active-popover'], skip(1));
+                const datepicker = new Datepicker(spanHelper, {
+                    onSelect: (instance, date) => {
+                        removeActivePopovers();
+                        // Do stuff when a date is selected (or unselected) on the calendar.
+                        // You have access to the datepicker instance for convenience.
+                    },
+                    minDate: new Date()
+                }); 
                 createPopper(dueDateDiv, spanHelper, {placement: 'bottom'});
                 parentDiv.appendChild(spanHelper);
             })
