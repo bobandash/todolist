@@ -70,6 +70,10 @@ input {
     width: 100%;
 }
 
+i:hover {
+    cursor: pointer;
+}
+
 input[type="submit"]{
     background-color: white;
     border: 1px solid black;
@@ -366,7 +370,7 @@ form {
     display: none;
 }
 
-#hamburger-menu div {
+#hamburger-menu > div {
     margin-left: 1.5em;
 }
 
@@ -391,6 +395,40 @@ form {
 
 #hamburger-menu li a:hover {
     background-color: lightgray;
+    cursor: pointer;
+}
+
+
+#add-project-form {
+    display: flex;
+    width: 90%;
+}
+
+#add-project-form input {
+    font-size: 1.1em;
+}
+
+#add-project-form div {
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#add-project-form i {
+    margin-left: .25em;
+    margin-right: .25em;
+    color: white;
+}
+
+#confirm-add-project {
+    background-color: lightgreen;
+    margin-left: 0.25em;
+}
+
+#cancel-add-project {
+    background-color: lightcoral;
+    margin-left: 0.25em;
 }
 
 

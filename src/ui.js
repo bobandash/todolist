@@ -75,6 +75,7 @@ const ui = (() => {
         const bodyElem = document.querySelector('body');
 
         addHamburgerMenuBtnFunctionality();
+        addHamburgerNavItemsFunctionality();
 
         const containerDiv = createDOMContainer();
         const inboxProject = storage.allProjects.filter(project => project.getName() === 'Inbox')[0];
@@ -107,6 +108,100 @@ const ui = (() => {
         })
     }
 
+    function addHamburgerNavItemsFunctionality(){
+        addDefaultHamburgerNavItemsFunctionality();
+        addProjectFunctionality();
+    }
+
+    function addDefaultHamburgerNavItemsFunctionality(){
+        const inboxNav = document.querySelector('a[data-project-index="0"]');
+        
+    }
+
+    function addProjectFunctionality(){
+        const addProjectNode = document.getElementById('add-project-button');
+        addProjectNodeFunctionality(addProjectNode);
+
+        function createAddProjectText(){
+            const addProjectLink = createTag('a','+ Add Projects', ...skip(3))
+            const addProjectBtn = createContainer('li', skip(1), 'add-project-button', [addProjectLink], skip(1));
+            addProjectNodeFunctionality(addProjectBtn);
+            return addProjectBtn;
+        }
+
+        function addProjectNodeFunctionality(addProjectNode){
+            addProjectNode.addEventListener('click', function(){
+                addProjectNode.parentNode.insertBefore(createAddProjectForm(), addProjectNode);
+                addProjectNode.remove();
+            })
+        }
+
+        function createAddProjectForm(){
+            const addProjectInput = createInput('text', skip(1), 'add-project-name', skip(1), true, true);
+            const confirmIcon = createTag('i',skip(1),['fa-solid','fa-sharp','fa-check'], skip(1));
+            const cancelIcon = createTag('i',skip(1),['fa-solid','fa-sharp','fa-x'], skip(1));
+            const confirmDiv = createContainer('div', skip(1), 'confirm-add-project', [confirmIcon], skip(1));
+            const cancelDiv = createContainer('div', skip(1), 'cancel-add-project', [cancelIcon], skip(1));           
+            const form = createContainer('form', skip(1), 'add-project-form', [addProjectInput, confirmDiv, cancelDiv], skip(1));
+
+            addCancelBtnFormFunctionality(cancelDiv);
+            addConfirmBtnFormFunctionality(confirmDiv, addProjectInput);
+
+            return form;
+        }
+
+        function addCancelBtnFormFunctionality(cancelDiv){
+            cancelDiv.addEventListener('click', function() {
+                const form = document.getElementById('add-project-form');
+                const addProjectText = createAddProjectText();
+                form.parentNode.insertBefore(addProjectText, form);
+                form.remove();
+            })
+        }
+
+        function addConfirmBtnFormFunctionality(confirmDiv, projectNameInput){
+            confirmDiv.addEventListener('click', function(){
+                const form = document.getElementById('add-project-form');
+                const projectName = projectNameInput.value;
+                if(projectName){
+                    let newProject = project(projectName);
+                    storage.addProject(newProject);
+                    const projectLink = createProjectNode(newProject);
+                    const addProjectText = createAddProjectText();
+                    form.parentNode.insertBefore(projectLink, form);
+                    form.parentNode.insertBefore(addProjectText, form);
+                    form.remove();
+                }
+            })
+        }
+
+        //element that contains project name, if clicked on then clear all tasks and load the relevant tasks
+        function createProjectNode(projectObject){
+            const projectLink = document.createElement('a');
+            projectLink.innerText = projectObject.getName();
+            projectLink.setAttribute('data-project-index', projectObject.getIndex());
+            
+            const projectLinkContainer = createContainer('li', skip(1), skip(1), [projectLink], skip(1));
+            projectLinkContainer.appendChild(projectLink);
+            addProjectLinkEventListener();
+
+            function addProjectLinkEventListener(){
+                projectLinkContainer.addEventListener('click', function(){
+                    const container = document.getElementById('container');
+                    clearAllTasksDOM();
+                    container.appendChild(createDOMProjectHeader(projectObject));
+
+                    const projectIndexArray = storageLookups.getProjectIndex();
+                    const relevantTasks = storage.allProjects[projectIndexArray].getTasks();
+                    addAllTasksDOM(container, relevantTasks);
+                    container.appendChild(createDOMAddTask());
+                })
+            }
+
+            return projectLinkContainer;
+        }
+    }
+
     //entire container that holds all the tasks, unique id is container
     function createDOMContainer(){
         return createContainer('div', skip(1), 'container', ...skip(2));
@@ -115,7 +210,7 @@ const ui = (() => {
     //the text that contains the project name
     function createDOMProjectHeader(project){
         const header = createTag('h1', project.getName(), ['header-type'], skip(1));
-        return createContainer('div', skip(1), 'project-header', [header], ['data-index', project.getIndex()]);
+        return createContainer('div', skip(1), 'project-header', [header], ['data-project-index', project.getIndex()]);
     }
 
     //creates the div that when clicked, the add new task form appears
@@ -512,7 +607,7 @@ const ui = (() => {
         }
 
         function getStorageProjectIndex(){
-            const projectIndex = document.getElementById('project-header').getAttribute('data-index');
+            const projectIndex = document.getElementById('project-header').getAttribute('data-project-index');
             const projectArrayIndex = storage.allProjects.findIndex(project => project.getIndex() == projectIndex);
             return projectArrayIndex;
         }
@@ -679,13 +774,30 @@ const ui = (() => {
 
     }
 
+    //adds all dom of tasks and subtasks in a project
+    function addAllTasksDOM(container, tasks){
+        tasks.forEach(task => {
+            container.appendChild(createDOMTask(task));
+            const allSubtasks = task.getSubtasks();
+            allSubtasks.forEach(subtask => {
+                container.appendChild(createDOMSubtask(subtask, task.getIndex()));
+            })
+        })
+    }
+
+    const clearAllTasksDOM = () => {
+        const containerDiv = document.getElementById('container');
+        while(containerDiv.firstChild){
+            containerDiv.removeChild(containerDiv.firstChild);   
+        }
+    }
 
     //find the array indicies of projects, tasks, and subtasks
     const storageLookups = (() => {
         //returns index of project in all projects array
         function getProjectIndex(){
             let projectIndexInArray = 0;
-            let projectDataIndex = document.getElementById('project-header').getAttribute('data-index');
+            let projectDataIndex = document.getElementById('project-header').getAttribute('data-project-index');
             storage.allProjects.forEach((project, index) => {
                 if(project.getIndex() == projectDataIndex){
                     projectIndexInArray = index;
@@ -708,23 +820,7 @@ const ui = (() => {
         return {getProjectIndex, getTaskIndex, getSubtaskIndex}
     })();
 
-    //adds all dom of tasks and subtasks in a project
-    function addAllTasksDOM(container, tasks){
-        tasks.forEach(task => {
-            container.appendChild(createDOMTask(task));
-            const allSubtasks = task.getSubtasks();
-            allSubtasks.forEach(subtask => {
-                container.appendChild(subtaskDOM(subtask).getDOM());
-            })
-        })
-    }
-
-    const clearAllTasks = () => {
-        const containerDiv = document.getElementById('container');
-        containerDiv.remove();
-    }
-
-    return {initialRender, clearAllTasks};
+    return {initialRender};
 
 })();
 
