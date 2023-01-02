@@ -20,6 +20,10 @@ i {
     margin-left: .2em;
 }
 
+i.fa-regular.fa-circle:hover {
+    text-shadow: 0 0 2px #000;
+}
+
 body, html {
     margin: 0;
     padding: 0;
@@ -434,6 +438,66 @@ form {
 /* end hamburger menu */
 
 
+/* for estimated time */
+#estimated-time-form {
+    border: 1px solid black;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width: 9em;
+}
+
+#estimated-time-form > * {
+    margin: .05em 1em;
+}
+
+#estimated-time-form input {
+    width: 8em;
+    border: 1px solid #000000
+}
+
+#estimated-time-form > *:nth-last-child(1){
+    margin: .2em .5em;
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.button-container button:nth-last-child(1){
+    margin-left: 0.5em;
+}
+
+.button-container button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    border-radius: 1px;
+}
+
+.button-container button i {
+    margin: .1em .15em;
+}
+
+#confirm-est-time {
+    background-color: lightgreen;
+}
+
+#cancel-est-time {
+    background-color: lightcoral;
+}
+
+/* end for estimated time */
+
+
+@media only screen and (max-width: 400px){
+    .popover-icons-div {
+        font-size: 0.9rem;
+    }
+}
 
 
 /* for desktop responsiveness */

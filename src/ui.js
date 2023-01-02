@@ -287,6 +287,8 @@ const ui = (() => {
  
         addPriorityPopoverEventListener(priorityDiv, popoverContainer);
         addDueDatePopoverEventListener(dueDateDiv, popoverContainer);
+        addEstTimePopoverEventListener(estimatedTimeDiv, popoverContainer);
+
 
         //buttons for form actions
         const cancelBtn = createTag('button','Cancel', skip(1), 'cancel-task-form');
@@ -324,10 +326,9 @@ const ui = (() => {
         //when clicking priority options div
         function addPriorityPopoverEventListener(priorityDiv, parentDiv){
             priorityDiv.addEventListener('click', function(){
-                if(isActive(priorityDiv)){
-                    removeActivePopovers();
-                }
-                else {
+                removeActivePopovers();
+                removeOtherActiveStatuses(priorityDiv);
+                if(!isActive(priorityDiv)){
                     const priority1 = getPriorityOption(1);
                     const priority2 = getPriorityOption(2);
                     const priority3 = getPriorityOption(3);
@@ -339,6 +340,267 @@ const ui = (() => {
             })
         }
 
+        function addEstTimePopoverEventListener(estimatedTimeDiv, parentDiv){
+            estimatedTimeDiv.addEventListener('click', function(){
+                removeActivePopovers();
+                removeOtherActiveStatuses(estimatedTimeDiv);
+                if(!isActive(estimatedTimeDiv)){
+                    const estimatedTimeForm = createEstimatedTimeForm(estimatedTimeDiv);
+                    createPopper(estimatedTimeDiv, estimatedTimeForm, {placement: 'bottom'});
+                    parentDiv.appendChild(estimatedTimeForm);
+                }
+                toggleActive(estimatedTimeDiv);
+            })            
+        }
+
+        function addDueDatePopoverEventListener(dueDateDiv, parentDiv){
+            dueDateDiv.addEventListener('click', function(){
+                removeActivePopovers();
+                const spanHelper = createTag('span', skip(1), ['active-popover'], skip(1));
+                const datepicker = new Datepicker(spanHelper, {
+                    onSelect: (instance, date) => {
+                        removeActivePopovers();
+                        // Do stuff when a date is selected (or unselected) on the calendar.
+                        // You have access to the datepicker instance for convenience.
+                    },
+                    minDate: new Date()
+                }); 
+                createPopper(dueDateDiv, spanHelper, {placement: 'bottom'});
+                parentDiv.appendChild(spanHelper);
+            })
+        }
+
+        //checks if element has active-popover class
+        function isActive(element){
+            if(element.classList.contains('active')){
+                return true;
+            }
+            return false;
+        }
+
+        function toggleActive(element){
+            if(element.classList.contains('active')){
+                element.classList.remove('active');
+            } else {
+                element.classList.add('active');
+            }
+        }
+
+        function removeOtherActiveStatuses(element){
+            const allActivePopoverIcons = Array.from(document.querySelectorAll('.active'));
+            allActivePopoverIcons.forEach(activeIcon => {
+                if(activeIcon != element){
+                    activeIcon.classList.remove('active');
+                }
+            })
+        }
+
+        //if there's any active popovers, remove the popover
+        //determined by class name 'active-popover'
+        function removeActivePopovers(){
+            const activePopovers = Array.from(document.getElementsByClassName('active-popover'));
+            if(activePopovers.length > 0){
+                activePopovers.forEach(popover => {
+                popover.remove();
+            })}
+        }
+
+        function createEstimatedTimeForm(estimatedTimeDiv){
+            const daysText = createTag('div','Days:', ...skip(2));
+            const daysInput = createEstTimeInputs('days', 1);
+
+            const hoursText = createTag('div','Hours (1-23):', ...skip(2));
+            const hoursInput = createEstTimeInputs('hours', 1, 23);
+            
+            const minutesText = createTag('div','Minutes (1-59):', ...skip(2));
+            const minutesInput = createEstTimeInputs('minutes', 1, 59);
+            addExistingInputValues();
+
+            const confirmIcon = createTag('i', skip(1), ['fa-solid','fa-sharp','fa-check'], skip(1));
+            const confirmBtn = createContainer('button', skip(1), 'confirm-est-time', [confirmIcon], skip(1));
+
+            const cancelIcon = createTag('i', skip(1), ["fa-solid","fa-sharp","fa-x"], skip(1));
+            const cancelBtn = createContainer('button', skip(1), 'cancel-est-time', [cancelIcon], skip(1));
+            const buttonsContainer = createContainer('div', ['button-container'], skip(1), [confirmBtn, cancelBtn], skip(1));
+
+            const form = createContainer('form', ['active-popover'], 'estimated-time-form', [daysText, daysInput, hoursText, hoursInput, minutesText, minutesInput, buttonsContainer], skip(1));
+            
+            function createEstTimeInputs(identifer, min, max){
+                const input = document.createElement('input');
+                input.setAttribute('type','number');
+                input.setAttribute('id',identifer);
+                input.setAttribute('name',identifer);
+                input.setAttribute('min', min);
+                if(max){
+                    input.setAttribute('max', max);
+                }
+                return input;
+            }
+
+            function addExistingInputValues(){
+                const days = estimatedTimeDiv.getAttribute('data-days');
+                const hours = estimatedTimeDiv.getAttribute('data-hours');
+                const minutes = estimatedTimeDiv.getAttribute('data-minutes');
+                if(days){
+                    daysInput.value = days;
+                }
+                if(hours){
+                    hoursInput.value = hours;
+                }
+                if(minutes){
+                    minutesInput.value = minutes;
+                }
+            }
+
+
+            cancelBtn.addEventListener('click', function(){
+                removeActivePopovers();
+                toggleActive(estimatedTimeDiv);               
+            })
+
+            confirmBtn.addEventListener('click', function(){
+                const days = daysInput.value;
+                const hours = hoursInput.value;
+                const minutes = minutesInput.value;
+                removeExistingTimeAttributes();
+                addNewTimeAttributes();
+                changeTimeText();
+                removeActivePopovers();
+                toggleActive(estimatedTimeDiv);
+
+                function removeExistingTimeAttributes(){
+                    estimatedTimeDiv.removeAttribute('data-days');
+                    estimatedTimeDiv.removeAttribute('data-hours');
+                    estimatedTimeDiv.removeAttribute('data-minutes');
+                }
+        
+                function addNewTimeAttributes(){
+                    if(days){
+                        estimatedTimeDiv.setAttribute('data-days', days);
+                    }
+                    if(hours){
+                        estimatedTimeDiv.setAttribute('data-hours', hours);
+                    }
+                    if(minutes){
+                        estimatedTimeDiv.setAttribute('data-minutes', minutes);
+                    }
+                }
+        
+                function changeTimeText(){
+                    const clockIcon = createTag('i', skip(1), ['fa-regular','fa-clock'], skip(1));
+                    let timeText = '';
+                    let timeTextNode = '';
+                    if(days || hours || minutes){
+                        if(days){
+                            timeText = days + 'D';
+                        }
+                        if(hours){
+                            if(timeText.slice(-1) === 'D'){
+                                timeText = `${timeText}:${hours}H`;
+                            }
+                            else{
+                                timeText = `${hours}H`
+                            }
+                        }
+                        if(minutes){
+                            if(timeText.slice(-1) === 'D' || timeText.slice(-1) === 'H'){
+                                timeText = `${timeText}:${minutes}M`;
+                            }
+                            else{
+                                timeText = `${minutes}M`
+                            }                           
+                        }
+                    } else {
+                        timeText = 'Est Time';
+                    }
+                    
+                    timeTextNode = document.createTextNode(` ${timeText}`);
+                    estimatedTimeDiv.innerText = '';
+                    estimatedTimeDiv.appendChild(clockIcon);
+                    estimatedTimeDiv.appendChild(timeTextNode);
+                }
+
+            })
+            return form;
+        }
+
+
+        //removes the form and adds the add task text back
+        function addCancelAddTaskBtnFunctionality(){
+            cancelBtn.addEventListener('click', function(){
+                form.remove();
+                const container = document.getElementById('container');
+                container.appendChild(createDOMAddTask());
+            }, {once:true});
+        }
+
+        //removes the form and adds the task dom
+        //need to add error message of some sort when there's no text in the name field
+        function addSubmitAddTaskBtnFunctionality(){
+            submitBtn.addEventListener('click', function(){
+                const nameField = document.getElementById('name').value;
+                const descriptionField = document.getElementById('description').value;
+                const priorityNumber = document.getElementById('priority-btn').getAttribute('data-priority-number');
+                
+                //add estimated time functionality
+                const estTimeDays = document.getElementById('est-completion-time-btn').getAttribute('data-days');
+                const estTimeHours = document.getElementById('est-completion-time-btn').getAttribute('data-hours');
+                const estTimeMinutes = document.getElementById('est-completion-time-btn').getAttribute('data-minutes');
+
+                if(nameField){
+                    const container = document.getElementById('container');
+
+                    let projectIndexInArray = storageLookups.getProjectIndex();
+                    let newTask = task(nameField, descriptionField, '', [estTimeDays, estTimeHours, estTimeMinutes], priorityNumber);
+                    newTask = storage.allProjects[projectIndexInArray].addTask(newTask);
+
+                    let newTaskDOM = createDOMTask(newTask);
+                    const addTaskElem = createDOMAddTask();                    
+                    container.appendChild(newTaskDOM);
+                    container.appendChild(addTaskElem);
+                    form.remove();
+                } 
+            })          
+        }
+
+        function addCancelEditTaskBtnFunctionality(){
+            cancelBtn.addEventListener('click', function(){
+                const invisibleTask = document.getElementById('invisible');
+                invisibleTask.removeAttribute('id');
+                form.remove();
+            })
+        }
+
+        function addSubmitEditTaskFunctionality(){
+            submitBtn.addEventListener('click', function(){                
+                const nameField = document.getElementById('name').value;
+                const descriptionField = document.getElementById('description').value;
+                const priorityNumber = document.getElementById('priority-btn').getAttribute('data-priority-number');
+                const estimatedCompletionTimeBtn = document.getElementById('est-completion-time-btn');
+                const estimatedCompletionTime = [estimatedCompletionTimeBtn.getAttribute('data-days'), estimatedCompletionTimeBtn.getAttribute('data-hours'), estimatedCompletionTimeBtn.getAttribute('data-minutes')];
+                const invisibleTaskElement = document.getElementById('invisible');
+                
+
+                if(nameField){
+                    const currentTaskDataIndex = invisibleTaskElement.getAttribute('data-task-index');
+                    const projectIndexInArray = storageLookups.getProjectIndex();
+                    const taskIndexInArray = storageLookups.getTaskIndex(projectIndexInArray, currentTaskDataIndex);
+                    const currentTask = storage.allProjects[projectIndexInArray].getTasks()[taskIndexInArray];
+                    currentTask.setName(nameField)
+                    currentTask.setDescription(descriptionField)
+                    currentTask.setPriority(priorityNumber);
+                    currentTask.setEstimatedTime(estimatedCompletionTime);
+
+                    const newTaskDOM = createDOMTask(currentTask);
+                    invisibleTaskElement.parentNode.insertBefore(newTaskDOM, invisibleTaskElement);
+                    invisibleTaskElement.remove();
+                    form.remove();
+                }               
+            })
+        }
+
+        //helper function for priority, estimated time, and due date icons
+        //for priority
         function getPriorityOption(priorityNumber){
             const priorityOptionDiv = document.createElement('div');
             const priorityIcon = document.createElement('i');
@@ -375,113 +637,7 @@ const ui = (() => {
             const priorityOptionsDiv = document.getElementById('priority-btn');
             priorityOptionsDiv.setAttribute('data-priority-number', priorityNumber);
         }
-
-        function addDueDatePopoverEventListener(dueDateDiv, parentDiv){
-            dueDateDiv.addEventListener('click', function(){
-                removeActivePopovers();
-                const spanHelper = createTag('span', skip(1), ['active-popover'], skip(1));
-                const datepicker = new Datepicker(spanHelper, {
-                    onSelect: (instance, date) => {
-                        removeActivePopovers();
-                        // Do stuff when a date is selected (or unselected) on the calendar.
-                        // You have access to the datepicker instance for convenience.
-                    },
-                    minDate: new Date()
-                }); 
-                createPopper(dueDateDiv, spanHelper, {placement: 'bottom'});
-                parentDiv.appendChild(spanHelper);
-            })
-        }
-
-        //checks if element has active-popover class
-        function isActive(element){
-            if(element.classList.contains('active')){
-                return true;
-            }
-            return false;
-        }
-
-        function toggleActive(element){
-            if(element.classList.contains('active')){
-                element.classList.remove('active');
-            } else {
-                element.classList.add('active');
-            }
-        }
-
-        //if there's any active popovers, remove the popover
-        //determined by class name 'active-popover'
-        function removeActivePopovers(){
-            const activePopovers = Array.from(document.getElementsByClassName('active-popover'));
-            if(activePopovers.length > 0){
-                activePopovers.forEach(popover => {
-                popover.remove();
-            })}
-        }
-
-        //removes the form and adds the add task text back
-        function addCancelAddTaskBtnFunctionality(){
-            cancelBtn.addEventListener('click', function(){
-                form.remove();
-                const container = document.getElementById('container');
-                container.appendChild(createDOMAddTask());
-            }, {once:true});
-        }
-
-        //removes the form and adds the task dom
-        //need to add error message of some sort when there's no text in the name field
-        function addSubmitAddTaskBtnFunctionality(){
-            submitBtn.addEventListener('click', function(){
-                const nameField = document.getElementById('name').value;
-                const descriptionField = document.getElementById('description').value;
-                const priorityNumber = document.getElementById('priority-btn').getAttribute('data-priority-number');
-                if(nameField){
-                    const container = document.getElementById('container');
-
-                    let projectIndexInArray = storageLookups.getProjectIndex();
-                    let newTask = task(nameField, descriptionField, '', '', priorityNumber);
-                    newTask = storage.allProjects[projectIndexInArray].addTask(newTask);
-
-                    let newTaskDOM = createDOMTask(newTask);
-                    const addTaskElem = createDOMAddTask();                    
-                    container.appendChild(newTaskDOM);
-                    container.appendChild(addTaskElem);
-                    form.remove();
-                } 
-            })          
-        }
-
-        function addCancelEditTaskBtnFunctionality(){
-            cancelBtn.addEventListener('click', function(){
-                const invisibleTask = document.getElementById('invisible');
-                invisibleTask.removeAttribute('id');
-                form.remove();
-            })
-        }
-
-        function addSubmitEditTaskFunctionality(){
-            submitBtn.addEventListener('click', function(){                
-                const nameField = document.getElementById('name').value;
-                const descriptionField = document.getElementById('description').value;
-                const priorityNumber = document.getElementById('priority-btn').getAttribute('data-priority-number');
-                const invisibleTaskElement = document.getElementById('invisible');
-
-                if(nameField){
-                    const currentTaskDataIndex = invisibleTaskElement.getAttribute('data-task-index');
-                    const projectIndexInArray = storageLookups.getProjectIndex();
-                    const taskIndexInArray = storageLookups.getTaskIndex(projectIndexInArray, currentTaskDataIndex);
-                    const currentTask = storage.allProjects[projectIndexInArray].getTasks()[taskIndexInArray];
-                    currentTask.setName(nameField)
-                    currentTask.setDescription(descriptionField)
-                    currentTask.setPriority(priorityNumber);
-                    
-                    const newTaskDOM = createDOMTask(currentTask);
-                    invisibleTaskElement.parentNode.insertBefore(newTaskDOM, invisibleTaskElement);
-                    invisibleTaskElement.remove();
-                    form.remove();
-                }               
-            })
-        }
+        //end for priority
     }
 
 
@@ -583,13 +739,13 @@ const ui = (() => {
         const deleteIcon = createTag('i', skip(1), ['fa-solid','fa-trash', 'pointer'], skip(1));      
         const iconContainer = createContainer('div', ['button-icons'], skip(1), [addSubtaskIcon, editIcon, deleteIcon], skip(1));
 
-        if(taskObj.getEstimatedTime()){
-            const taskEstimatedTime = createTag('div',`Est Time: ${taskObj.getEstimatedTime()}`, ['task-estimated-time'], skip(1));
-            taskInformationDiv.appendChild(taskEstimatedTime);
-        }
         if(taskObj.getDescription()){
             const taskDescription = createTag('div',taskObj.getDescription(), ['task-description'], skip(1));
             taskInformationDiv.appendChild(taskDescription);
+        }
+        if(taskObj.getEstimatedTimeText()){
+            const taskEstimatedTime = createTag('div',`Est Time: ${taskObj.getEstimatedTimeText()}`, ['task-estimated-time'], skip(1));
+            taskInformationDiv.appendChild(taskEstimatedTime);
         }
 
         const taskDOM = createContainer('div', ['task'], '', [completeTaskDiv, taskInformationDiv, iconContainer], ['data-task-index', taskObj.getIndex()]);
@@ -683,7 +839,7 @@ const ui = (() => {
         //end for completing a task and deleting a task
 
 
-        //for editing a task
+        //for editing a task, add attributes from the task that's being edited to the form
         function addEditIconFunctionality(){
             editIcon.addEventListener('click', function() {
                 if(hasForm()){
@@ -702,9 +858,22 @@ const ui = (() => {
                 document.getElementById('name').value = currentTaskObject.getName();
                 document.getElementById('description').value = currentTaskObject.getDescription();
                 const priorityIcon = document.querySelector('#priority-btn > i');
+                const estTimeBtn = document.getElementById('est-completion-time-btn');
+                
                 if(currentTaskObject.getPriority()){
                     addPriorityColor(priorityIcon, currentTaskObject.getPriority());
                     makeSolidIcon(priorityIcon);
+                }
+
+                if(currentTaskObject.getEstimatedTimeText()){
+                    estTimeBtn.setAttribute('data-days',currentTaskObject.getEstimatedTimeDays());
+                    estTimeBtn.setAttribute('data-hours',currentTaskObject.getEstimatedTimeHours());                   
+                    estTimeBtn.setAttribute('data-minutes',currentTaskObject.getEstimatedTimeMinutes());
+                    estTimeBtn.innerText = '';
+                    const clockIcon = createTag('i', skip(1), ['fa-regular','fa-clock'], skip(1));
+                    const estTimeText = document.createTextNode(` ${currentTaskObject.getAbbreviatedEstimatedTimeText()}`);
+                    estTimeBtn.appendChild(clockIcon);
+                    estTimeBtn.appendChild(estTimeText);
                 }
             })
         }
