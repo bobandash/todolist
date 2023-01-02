@@ -3,7 +3,7 @@ import storage from './storage.js';
 import task from './task.js';
 import subtask from './subtask.js';
 import { createPopper } from '@popperjs/core';
-import Datepicker from 'vanillajs-datepicker/Datepicker';
+import datepicker from 'js-datepicker';
 import project from './project.js';
 
 //each dom element has a data index that's also in the storage
@@ -355,18 +355,24 @@ const ui = (() => {
 
         function addDueDatePopoverEventListener(dueDateDiv, parentDiv){
             dueDateDiv.addEventListener('click', function(){
+
                 removeActivePopovers();
-                const spanHelper = createTag('span', skip(1), ['active-popover'], skip(1));
-                const datepicker = new Datepicker(spanHelper, {
+                dueDateDiv.classList.add('active');
+/*                 const spanHelper = createTag('span', skip(1), ['active-popover'], skip(1)) */;
+                const picker = datepicker(dueDateDiv, {
+                    minDate: new Date(),
                     onSelect: (instance, date) => {
-                        removeActivePopovers();
+                        dueDateDiv.setAttribute('data-due-date', date.toLocaleDateString());;
+                        dueDateDiv.innerText = '';
+                        const calendarIcon = createTag('i', skip(1), ['fa-regular', 'fa-calendar'], skip(1));
+                        const dateText = document.createTextNode(` ${date.toLocaleDateString()}`);
+                        dueDateDiv.appendChild(calendarIcon);
+                        dueDateDiv.appendChild(dateText);
+                        picker.remove();
                         // Do stuff when a date is selected (or unselected) on the calendar.
                         // You have access to the datepicker instance for convenience.
-                    },
-                    minDate: new Date()
-                }); 
-                createPopper(dueDateDiv, spanHelper, {placement: 'bottom'});
-                parentDiv.appendChild(spanHelper);
+                      }
+                });         
             })
         }
 
@@ -541,17 +547,18 @@ const ui = (() => {
                 const nameField = document.getElementById('name').value;
                 const descriptionField = document.getElementById('description').value;
                 const priorityNumber = document.getElementById('priority-btn').getAttribute('data-priority-number');
-                
                 //add estimated time functionality
                 const estTimeDays = document.getElementById('est-completion-time-btn').getAttribute('data-days');
                 const estTimeHours = document.getElementById('est-completion-time-btn').getAttribute('data-hours');
                 const estTimeMinutes = document.getElementById('est-completion-time-btn').getAttribute('data-minutes');
+                const dueDate = document.getElementById('due-date-btn').getAttribute('data-due-date');
+                
 
                 if(nameField){
                     const container = document.getElementById('container');
 
                     let projectIndexInArray = storageLookups.getProjectIndex();
-                    let newTask = task(nameField, descriptionField, '', [estTimeDays, estTimeHours, estTimeMinutes], priorityNumber);
+                    let newTask = task(nameField, descriptionField, dueDate, [estTimeDays, estTimeHours, estTimeMinutes], priorityNumber);
                     newTask = storage.allProjects[projectIndexInArray].addTask(newTask);
 
                     let newTaskDOM = createDOMTask(newTask);
@@ -743,6 +750,10 @@ const ui = (() => {
             const taskDescription = createTag('div',taskObj.getDescription(), ['task-description'], skip(1));
             taskInformationDiv.appendChild(taskDescription);
         }
+        if(taskObj.getDueDate()){
+            const taskEstimatedDueDate = createTag('div',`Due: ${taskObj.getDueDate()}`, ['task-due-date'], skip(1));
+            taskInformationDiv.appendChild(taskEstimatedDueDate);
+        }
         if(taskObj.getEstimatedTimeText()){
             const taskEstimatedTime = createTag('div',`Est Time: ${taskObj.getEstimatedTimeText()}`, ['task-estimated-time'], skip(1));
             taskInformationDiv.appendChild(taskEstimatedTime);
@@ -859,7 +870,7 @@ const ui = (() => {
                 document.getElementById('description').value = currentTaskObject.getDescription();
                 const priorityIcon = document.querySelector('#priority-btn > i');
                 const estTimeBtn = document.getElementById('est-completion-time-btn');
-                
+                const dueDateBtn = document.getElementById('due-date-btn');              
                 if(currentTaskObject.getPriority()){
                     addPriorityColor(priorityIcon, currentTaskObject.getPriority());
                     makeSolidIcon(priorityIcon);
@@ -874,6 +885,15 @@ const ui = (() => {
                     const estTimeText = document.createTextNode(` ${currentTaskObject.getAbbreviatedEstimatedTimeText()}`);
                     estTimeBtn.appendChild(clockIcon);
                     estTimeBtn.appendChild(estTimeText);
+                }
+
+                if(currentTaskObject.getDueDate()){
+                    dueDateBtn.setAttribute('data-due-date', currentTaskObject.getDueDate());
+                    dueDateBtn.innerText = '';
+                    const calendarIcon = createTag('i', skip(1), ['fa-regular','fa-calendar'], skip(1));
+                    const dueDateText = document.createTextNode(` ${currentTaskObject.getDueDate()}`);
+                    dueDateBtn.appendChild(calendarIcon);
+                    dueDateBtn.appendChild(dueDateText);                    
                 }
             })
         }

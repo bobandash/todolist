@@ -94,7 +94,7 @@ input[type="submit"]{
 }
 
 .icon-yellow {
-    color: 	yellow;
+    color: 	rgb(211, 211, 24);
 }
 
 .icon-green {
@@ -274,7 +274,7 @@ input[type="submit"]{
     margin: 0;
 }
 
-.task-description, .task-estimated-time {
+.task-description, .task-estimated-time, .task-due-date {
     color: rgb(119, 119, 119);
 }
 
