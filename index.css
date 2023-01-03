@@ -1,0 +1,540 @@
+
+* {
+    font-family: 'Inter', 'Sans-Serif', 'Times New Roman';
+    box-sizing: border-box;
+}
+
+:root {
+    --modal-background: 1px solid rgba(128, 128, 128, 0.6);
+    --theme-color: #5881D0;
+}
+
+input::placeholder {
+    font-weight: 400;
+    font-size: 1.25em;
+    font-family: 'Inter', 'Sans-Serif', 'Times New Roman';  
+}
+
+i {
+    margin-left: .2em;
+}
+
+i.fa-regular.fa-circle:hover {
+    text-shadow: 0 0 2px #000;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+h1, h2, h3, h4, h5 {
+    margin: 0;
+    text-align: center;
+}
+
+
+.opaque-background {
+    background-color: rgba(211, 211, 211, 0.575);
+}
+
+button {
+    background-size: 100%;
+    background-color: white;
+    border: none;
+    padding: 0;
+}
+
+header {
+    background-color: var(--theme-color);
+    height: 10vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1.5em;
+    box-shadow: 0px 3px 15px rgba(100, 100, 100, 0.29);
+    -moz-box-shadow: 0px 3px 15px rgba(100, 100, 100, 0.29);
+    -webkit-box-shadow: 0px 3px 15px rgba(100, 100, 100, 0.29);
+    position: sticky;
+    top: 0px;
+}
+
+header i {
+    font-size: 1.4em;
+}
+
+form {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+input {
+    width: 100%;
+}
+
+i:hover, button:hover {
+    cursor: pointer;
+}
+
+input[type="submit"]{
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 10px;
+    font-size: 1.25em;
+}
+
+.icon {
+    text-shadow: -1px 0 #000, 0 1px #000, 1px 0 #000, 0 -1px #000;
+}
+
+.icon-red {
+    color: red;
+}
+
+.icon-yellow {
+    color: 	rgb(211, 211, 24);
+}
+
+.icon-green {
+    color: green;
+}
+
+#motivational-message-setting label, #motivational-message-setting a {
+    display: block;
+    margin-top: 0.5em;
+}
+
+
+#container {
+    margin: 1em 1.5em 0 1.5em;
+}
+
+.invisible-elements {
+    visibility: hidden;
+}
+
+#motivational-message {
+    margin: 1em 1.5em;
+    border: 1px solid gray;
+    border-radius: 10px;
+    text-align: center;
+}
+
+#motivational-message p {
+    margin: .1em 0em;
+    font-size: 1.1em;
+}
+
+#motivational-message-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+#motivational-message-header div {
+    margin-right: 0.5em;
+}
+
+#project-header {
+    margin-top: .25em;
+    margin-bottom: .25em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-icons i {
+    font-size: 1.5em;
+    margin-left: .25em;
+}
+
+.section-title {
+    font-weight: 500;
+    margin-top: .15em;
+}
+
+/* for the add task div */
+
+#add-task-clickable-div {
+    display: flex;
+    border-radius: 1em;
+    font-size: 1.25em;
+    align-items: center;
+    padding-top: .25em;
+    padding-bottom: .25em;
+}
+
+.add-task-text {
+    margin-left: 0.5em;
+}
+
+/*end for the add task div */
+
+#add-subtask-form-container {
+    margin-left: 30px;
+}
+
+#task-form, #add-subtask-form {
+    border: 1px solid black;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    margin-top: 0.75em;
+}
+
+#add-subtask-form input {
+    width: 90%;
+    margin: 5px; 
+}
+
+#task-form > input, .popover-icons-div {
+    margin-top: .25em;
+    margin-bottom: .25em;
+    width: 85%;
+}
+
+.popover-icons-div{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.task-form-icons:nth-child(n+2){
+    margin-left: .25em;
+}
+
+
+.task-form-icons, #form-actions-div button {
+    border: 1px solid gray;;
+    border-radius: 5px;;
+    padding: .2em;
+}
+
+.popover-container {
+    border-radius: 5px;
+    padding: 0;
+    border: 1px solid black;
+    background-color: white;
+}
+
+.popover-container div {
+    border-bottom: 1px solid black;
+    padding: .1em .2em;
+}
+
+#form-actions-div {
+    margin: .5em;
+    margin-bottom: 0em;
+    width: 92.5%;
+    display: flex;
+}
+
+#form-actions-div button {
+    font-size: 1em;
+}
+
+#submit-task-form, #add-subtask-submit-button {
+    margin-left: 0.5em;
+    background-color: var(--theme-color);
+}
+
+#cancel-task-form, #cancel-add-subtask-form {
+    margin-left: auto;
+}
+
+
+/* end for the add task form when you click the clickable div */
+
+.task {
+    margin-top: .5em;
+    display: grid;
+    grid-template-columns: 30px 1fr 60px;
+    grid-template-areas:
+        "bullet-points task-headers button-icons";
+}
+
+#invisible {
+    display: none;
+}
+
+.subtask {
+    margin-top: .25em;
+    display: grid;
+    grid-template-columns: 30px 30px 1fr 40px;
+    grid-template-areas:
+        ". bullet-points task-headers button-icons";
+}
+
+.task p, .subtask div {
+    margin: 0;
+}
+
+.task-description, .task-estimated-time, .task-due-date {
+    color: rgb(119, 119, 119);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+}
+
+.section h2 {
+    margin-bottom: 0px;
+}
+
+.section-dropdown {
+    margin-left: auto;
+}
+
+.complete-task-btn {
+    grid-area: bullet-points;
+}
+
+.task-title {
+    grid-area: task-headers;
+}
+
+.button-icons {
+    grid-area: button-icons;
+}
+
+.modal-background {
+    background-color: lightgray;
+    opacity: 0.5;
+}
+
+.modal-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 600px;
+    max-width: 90%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 1em 2em;
+    border: var(--modal-background);
+    border-radius: .5em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-container input {
+    border: var(--modal-background);
+    margin-top: .4em;
+    margin-bottom: .4em;
+}
+
+
+.modal-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.modal-buttons button{
+    display: block;
+    border: var(--modal-background);
+    padding: 0.3em 0.4em;
+    border-radius: .5em;
+}
+
+form {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+#modal-form-close-btn {
+    align-self: flex-end;
+}
+
+
+.pointer {
+    cursor: pointer;
+}
+
+/* for the hamburger menu */
+#hamburger-menu {
+    background-color: rgb(236, 236, 236);
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    margin: 0;
+    padding: 0;
+    width: 65%;
+    height: 100%;
+    position: fixed;
+}
+
+.hide {
+    display: none;
+}
+
+#hamburger-menu > div {
+    margin-left: 1.5em;
+}
+
+#hamburger-menu div li:nth-child(1){
+    margin-top: 1em;
+}
+
+#hamburger-menu li {
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.25em;
+    margin-right: 1em;
+    font-size: 1.25em;
+}
+
+#hamburger-menu li a {
+    color: black;
+    text-decoration: none;
+    padding-left: .25em;
+}
+
+#hamburger-menu li a:hover {
+    background-color: lightgray;
+    cursor: pointer;
+}
+
+
+#add-project-form {
+    display: flex;
+    width: 90%;
+}
+
+#add-project-form input {
+    font-size: 1.1em;
+}
+
+#add-project-form div {
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#add-project-form i {
+    margin-left: .25em;
+    margin-right: .25em;
+    color: white;
+}
+
+#confirm-add-project {
+    background-color: lightgreen;
+    margin-left: 0.25em;
+}
+
+#cancel-add-project {
+    background-color: lightcoral;
+    margin-left: 0.25em;
+}
+
+/* end hamburger menu */
+
+
+/* for estimated time */
+#estimated-time-form {
+    border: 1px solid black;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width: 9em;
+}
+
+#estimated-time-form > * {
+    margin: .05em 1em;
+}
+
+#estimated-time-form input {
+    width: 8em;
+    border: 1px solid #000000
+}
+
+#estimated-time-form > *:nth-last-child(1){
+    margin: .2em .5em;
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.button-container button:nth-last-child(1){
+    margin-left: 0.5em;
+}
+
+.button-container button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    border-radius: 1px;
+}
+
+.button-container button i {
+    margin: .1em .15em;
+}
+
+#confirm-est-time {
+    background-color: lightgreen;
+}
+
+#cancel-est-time {
+    background-color: lightcoral;
+}
+
+/* end for estimated time */
+
+
+@media only screen and (max-width: 400px){
+    .popover-icons-div {
+        font-size: 0.9rem;
+    }
+}
+
+
+/* for desktop responsiveness */
+@media only screen and (min-width: 600px){
+    #container {
+        margin: 1.5em 2.5em 0px 2.5em;
+    }
+}
+
+@media only screen and (min-width: 800px){
+    #container {
+        margin: 1.5em 15em 0px 15em;
+    }
+
+    .opaque-background {
+        background-color: white;
+    }
+
+    #hamburger-menu {
+        width: 25%;
+    }
+
+    #hamburger-menu > * {
+        font-size: 1.1em;
+    }
+}
+
+@media only screen and (min-width: 1000px){
+    #container {
+        margin: 1.5em 20em 0px 20em;
+    }
+    #hamburger-menu {
+        width: 20%;
+    }
+}
+
+@media only screen and (min-width: 1400px){
+    #container {
+        margin: 1.5em 30em 0px 30em;
+    }
+}
