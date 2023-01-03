@@ -5,6 +5,8 @@ import subtask from './subtask.js';
 import { createPopper } from '@popperjs/core';
 import datepicker from 'js-datepicker';
 import project from './project.js';
+import '@fortawesome/fontawesome-free/css/all.css';
+import 'js-datepicker/dist/datepicker.min.css';
 
 //each dom element has a data index that's also in the storage
 //these 'data-index' attributes are used to reference the storage arrays
