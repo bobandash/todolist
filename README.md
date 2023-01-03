@@ -2,7 +2,7 @@
 
 This project was a To-Do List written in vanilla JS, CSS, and HTML for The Odin Project.
 Below is the URL for the To-Do List:
-
+https://bobandash.github.io/todolist/
 
 Below is the URL for The Odin Project:
 https://www.theodinproject.com/lessons/node-path-javascript-todo-list
